@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>排兵布陣 群星亮相 - 測測你的投資人格（只供娛樂使用）</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* 全局变量与色彩规范 */
+        :root {
+            --primary-red: #d32d35; 
+            --dark-red: #7b1216; 
+            --gradient-red: linear-gradient(90deg, #d32d35, #7b1216); 
+            --bg-cream: #f8f6f0; 
+            --text-dark: #2c2c2c;
+            --text-gray: #666666;
+            --border-light: #e0dcd2; 
+            --option-gray: #e5dfd5; 
+        }
+
+        /* 基础重置 */
+        body {
+            background-color: #333333; 
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            min-height: 100vh;
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 核心 H5 容器：锁死最大宽度 */
+        .app-container {
+            width: 100%;
+            max-width: 480px; 
+            min-height: 100vh; 
+            background-image: url('mobile BG.png'); 
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ----- 语言选择页样式 (第0层) ----- */
+        #langPage {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 15vh;
+            box-sizing: border-box;
+            z-index: 20;
+        }
+        
+        .lang-title {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .lang-title span {
+            display: block;
+            font-size: 14px;
+            font-weight: normal;
+            margin-top: 10px;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .lang-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 75%;
+        }
+
+        .lang-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid transparent;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            color: var(--primary-red);
+            border-radius: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .lang-btn:active {
+            transform: scale(0.96);
+            background: #ffffff;
+        }
+
+        /* ----- 首页视图样式 (第一层) ----- */
+        #homePage {
+            width: 100%;
+            position: relative; 
+            display: none; 
+            flex-direction: column;
+        }
+        #homePage img.bg-img {
+            width: 100%;
+            height: auto;
+            display: block; 
+        }
+
+        /* 隐形热区按钮 */
+        .start-hotspot {
+            position: absolute;
+            bottom: 7%; 
+            left: 50%;
+            transform: translateX(-50%); 
+            width: 55%;
+            height: 9%;
+            background-color: transparent; 
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* 默认隐藏的主内容区（含答题和结果） */
+        #mainContent {
+            width: 100%;
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 20px 40px; 
+            box-sizing: border-box;
+        }
+
+        /* ----- 顶部 Logo 区 ----- */
+        .header-logo-container {
+            width: 100%;
+            height: 38px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            z-index: 5;
+        }
+        .header-logo-container img {
+            height: 100%;
+            width: auto; 
+            object-fit: contain;
+        }
+
+        /* 核心卡片容器：米白色圆角背景 */
+        .card-container {
+            width: 100%;
+            background: var(--bg-cream);
+            border-radius: 24px; 
+            padding: 35px 25px 25px; 
+            box-sizing: border-box;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            color: var(--text-dark);
+            position: relative;
+            z-index: 2; 
+        }
+
+        /* ----- 答题页专属样式 ----- */
+        .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+        .q-number { font-size: 32px; font-weight: 800; color: var(--text-dark); letter-spacing: -1px; }
+        .q-progress { font-size: 15px; color: var(--text-dark); font-weight: 600; }
+        .progress-track { width: 100%; height: 8px; background-color: #e5dfd5; border-radius: 5px; margin-bottom: 30px; overflow: hidden; display: flex; }
+        .progress-fill { height: 100%; background-color: var(--dark-red); border-radius: 5px; transition: width 0.3s ease; width: 0%; }
+        
+        .question-box h2 { font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 30px; line-height: 1.5; letter-spacing: 0.5px; }
+
+        .option-btn { display: flex; align-items: center; width: 100%; background: #ffffff; border: 1px solid var(--border-light); border-radius: 12px; padding: 16px 15px; margin-bottom: 15px; cursor: pointer; transition: all 0.2s; text-align: left; box-sizing: border-box; }
+        .option-letter { width: 28px; height: 28px; background-color: var(--option-gray); color: #888888; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 14px; margin-right: 15px; flex-shrink: 0; transition: all 0.2s; }
+        .option-text { font-size: 15px; color: var(--text-dark); line-height: 1.5; font-weight: 500; }
+        
+        .option-btn.selected { border-color: var(--primary-red); background-color: #fdf5f5; }
+        .option-btn.selected .option-letter { background-color: var(--primary-red); color: #ffffff; }
+
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 35px; gap: 15px; }
+        .nav-btn { flex: 1; padding: 14px 0; border-radius: 30px; font-size: 16px; font-weight: 800; cursor: pointer; text-align: center; transition: all 0.2s; border: none; }
+        .nav-btn:active { transform: scale(0.98); }
+        .prev-btn { background: transparent; border: 1px solid var(--primary-red); color: var(--primary-red); }
+        .next-btn { background: var(--dark-red); color: #ffffff; }
+        .next-btn.active { background: var(--gradient-red); box-shadow: 0 4px 15px rgba(164, 28, 36, 0.4); }
+        .next-btn:disabled { background: #d6d1c4; cursor: not-allowed; color: #ffffff; box-shadow: none; }
+
+        /* ----- 底部吉祥物区 ----- */
+        .mascot-container { 
+            width: 100%; 
+            text-align: center; 
+            margin-top: 35px; 
+        }
+        .mascot-container img { 
+            width: 130px; 
+            height: auto; 
+            object-fit: contain; 
+            display: inline-block;
+        }
+
+        /* ----- 结果页专属样式 ----- */
+        #resultPage { display: none; text-align: center; }
+        
+        .result-main-title { color: var(--text-dark); font-size: 34px; font-weight: 900; margin-bottom: 6px; letter-spacing: 2px;}
+        .result-sub-title { color: var(--primary-red); font-size: 18px; font-weight: bold; margin-bottom: 12px; }
+        
+        .quote { 
+            font-style: italic; 
+            color: var(--text-gray); 
+            margin-bottom: 20px; 
+            font-size: 20px; 
+            font-weight: bold;
+            line-height: 1.4;
+        }
+        
+        /* 核心修复：背景透明化以适应透明的 PNG 图片 */
+        .player-img-container { 
+            width: 100%; 
+            margin: 15px 0 25px; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            background: transparent; /* 去除原本的白色背景 */
+            box-shadow: none; /* 去除卡片阴影，让悬浮更自然 */
+        }
+        #resImg { 
+            width: 100%; 
+            display: block; 
+            object-fit: contain; /* 改为 contain 防止变形 */
+        }
+        
+        .labels-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; }
+        .label-tag { background: #fdf5f5; border: 1px solid var(--primary-red); color: var(--primary-red); padding: 5px 16px; font-size: 13px; border-radius: 20px; font-weight: bold;}
+        
+        .description { line-height: 1.8; font-size: 14px; color: var(--text-dark); text-align: justify; margin-bottom: 25px; font-weight: 500;}
+        
+        /* 四个二维码 2x2 布局 */
+        .qr-section { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: space-evenly; 
+            align-items: flex-start; 
+            margin: 25px 0; 
+            padding: 20px 0; 
+            border-top: 1px dashed var(--border-light); 
+            gap: 20px 0; 
+        }
+        .qr-box { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 8px; 
+            width: 45%; 
+        }
+        .qr-box img { 
+            width: 75px; 
+            height: 75px; 
+            object-fit: cover; 
+            border: 1px solid var(--border-light); 
+            border-radius: 6px; 
+            padding: 3px; 
+            background: #ffffff; 
+        }
+        .qr-text { 
+            font-size: 12px; 
+            color: var(--text-dark); 
+            font-weight: 800; 
+            text-align: center;
+        }
+        
+        .disclaimer { font-size: 10px; color: #999; text-align: justify; line-height: 1.6; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 20px; }
+
+        /* 结果页操作按钮组 */
+        .action-buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; width: 100%; }
+        .share-btn { width: 100%; background: var(--gradient-red); border: none; padding: 16px; font-size: 18px; font-weight: 800; cursor: pointer; color: #fff; border-radius: 30px; box-shadow: 0 4px 15px rgba(164, 28, 36, 0.4); }
+        .restart-btn { width: 100%; background: transparent; border: 1px solid var(--primary-red); padding: 14px; font-size: 16px; font-weight: 800; cursor: pointer; color: var(--primary-red); border-radius: 30px; }
+        .hidden { display: none !important; }
+
+        /* 海报预览弹窗 */
+        .poster-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px); }
+        .poster-content { position: relative; width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; animation: popUp 0.3s ease-out forwards; }
+        @keyframes popUp { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .poster-tip { color: #ffffff; font-size: 15px; font-weight: bold; margin-bottom: 15px; background: rgba(211, 45, 53, 0.9); padding: 8px 24px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        #generatedPosterImg { width: 100%; border-radius: 16px; object-fit: contain; max-height: 75vh; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .close-modal-btn { margin-top: 25px; width: 44px; height: 44px; background: rgba(255,255,255,0.2); border: 2px solid #fff; border-radius: 50%; color: #fff; font-size: 28px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="captureTarget">
+
+    <div id="langPage">
+        <div class="header-logo-container" style="margin-bottom: 40px;">
+            <img src="logo.png" alt="华夏基金 (香港)">
+        </div>
+        
+        <div class="lang-title">
+            请选择您的语言
+            <span>Please select your language</span>
+        </div>
+
+        <div class="lang-btn-group">
+            <button class="lang-btn" onclick="selectLanguage('tc')">繁體中文</button>
+            <button class="lang-btn" onclick="selectLanguage('sc')">简体中文</button>
+        </div>
+    </div>
+
+    <div id="homePage">
+        <img src="home-bg.jpg" alt="首页海报" class="bg-img">
+        <div class="start-hotspot" onclick="startQuiz()"></div>
+    </div>
+
+    <div id="mainContent">
+        <div class="header-logo-container">
+            <img src="logo.png" alt="华夏基金 (香港)">
+        </div>
+
+        <div class="card-container">
+            
+            <div id="quizPage">
+                <div class="progress-header">
+                    <div class="q-number" id="qNumberDisplay">Q1</div>
+                    <div class="q-progress" id="progressText">1/9</div>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+
+                <div class="question-box">
+                    <h2 id="questionTitle">题目加载中...</h2>
+                    <div id="optionsGroup"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button id="prevBtn" class="nav-btn prev-btn" onclick="prevQuestion()">上一题</button>
+                    <button id="nextBtn" class="nav-btn next-btn" onclick="nextQuestion()">下一题</button>
+                </div>
+
+                <div class="mascot-container" id="mascotWrapper">
+                    <img src="mascot.png" alt="华夏基金吉祥物">
+                </div>
+            </div>
+
+            <div id="resultPage">
+                <div class="result-main-title" id="resMainTitle"></div>
+                <div class="result-sub-title" id="resSubTitle"></div>
+                <div class="quote" id="resQuote"></div>
+                
+                <div class="player-img-container">
+                    <img id="resImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="球星照片" style="min-height: 200px;">
+                </div>
+
+                <div class="labels-container" id="resLabels"></div>
+
+                <div class="description" id="resDesc"></div>
+
+                <div class="qr-section">
+                    <div class="qr-box">
+                        <img src="qr-1.png" alt="QR">
+                        <div class="qr-text">扫码参与测试</div>
+                    </div>
+                    <div class="qr-box">
+                        <img src="qr-2.png" alt="QR">
+                        <div class="qr-text">官方社交账号 1</div>
+                    </div>
+                    <div class="qr-box">
+                        <img src="qr-3.png" alt="QR">
+                        <div class="qr-text">官方社交账号 2</div>
+                    </div>
+                    <div class="qr-box">
+                        <img src="qr-4.png" alt="QR">
+                        <div class="qr-text">官方社交账号 3</div>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    投资涉及风险，包括可能损失本金。本文所载的任何预测、展望或意见仅供阁下参考，幷不保证实现。本文件所载资讯反映截至发布日之市场情况与我方观点，如有变更，恕不另行通知。本资料之发行人为华夏基金(香港)有限公司。此资料幷未被香港证券及期货事务监察委员会所审阅。
+                </div>
+
+                <div class="action-buttons" id="actionButtonsGroup">
+                    <button class="share-btn" id="shareBtn" onclick="generateSharePoster()">生成专属结果海报</button>
+                    <button class="restart-btn" onclick="location.reload()">重新测试</button>
+                </div>
+
+            </div>
+        </div> 
+    </div>
+
+</div>
+
+<div id="posterModal" class="poster-modal hidden">
+    <div class="poster-content">
+        <div class="poster-tip">👉 长按下方图片保存至相册分享</div>
+        <img id="generatedPosterImg" src="" alt="分享海报">
+        <div class="close-modal-btn" onclick="closePosterModal()">×</div>
+    </div>
+</div>
+
+<script>
+    let currentLanguage = 'sc'; 
+
+    function selectLanguage(langCode) {
+        currentLanguage = langCode;
+        document.getElementById('langPage').style.display = 'none';
+        document.getElementById('homePage').style.display = 'flex';
+        window.scrollTo({top: 0, behavior: 'smooth'}); 
+    }
+
+    function startQuiz() {
+        document.getElementById('homePage').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'flex'; 
+        window.scrollTo({top: 0, behavior: 'smooth'}); 
+    }
+
+    const questions = [
+        {
+            id: "Q1",
+            title: "假设你化身场上球员，对阵完全陌生的对手，开场你会怎么踢？",
+            options: [
+                { text: "A. 先观察对手战术，绝不盲目冲，摸清底细再动脚", score: ["梅西", "马丁内斯"] },
+                { text: "B. 开局直接全线压上猛冲，靠气势压制对手，主打一个先发制人", score: ["姆巴佩", "C 罗"] },
+                { text: "C. 不按常规出牌，靠灵光一现制造意外惊喜", score: ["亚马尔", "哈兰德"] },
+                { text: "D. 牢牢锁死中场球权，稳扎稳打控节奏，绝不轻易丢球", score: ["贝林厄姆", "罗德里"] }
+            ]
+        },
+        {
+            id: "Q2",
+            title: "球队比分落后 1 球，场上局势吃紧，你的第一选择是？",
+            options: [
+                { text: "A. 稳住阵脚，耐心等待对手露出破绽，不急于强攻", score: ["罗德里", "贝林厄姆"] },
+                { text: "B. 全员火力拉满疯狂进攻，不惜代价快速扳平比分", score: ["C 罗", "哈兰德", "姆巴佩"] },
+                { text: "C. 切换全新战术打法，针对性抓对方防守短板", score: ["迪亚斯", "萨利巴", "梅西", "亚马尔"] },
+                { text: "D. 信任队内核心大腿，按原定战术稳步执行，不轻易乱改", score: ["马丁内斯", "范戴克"] }
+            ]
+        },
+        {
+            id: "Q3",
+            title: "你最欣赏以下哪种球员？",
+            options: [
+                { text: "A. “控球大师”：球队的进攻发动机", score: ["贝林厄姆", "罗德里", "梅西"] },
+                { text: "B. “关键先生”：读秒绝杀、一锤定音", score: ["C 罗", "姆巴佩", "贝林厄姆"] },
+                { text: "C. “未来之星”：新生代超新星，天赋拉满", score: ["亚马尔", "哈兰德"] },
+                { text: "D. “叹息之墙”：顶级门神 / 铁卫，零封专业户", score: ["范戴克", "迪亚斯", "萨利巴", "马丁内斯"] }
+            ]
+        },
+        {
+            id: "Q4",
+            title: "你怎么看待“赢球最重要，踢得丑无所谓”这句话？",
+            options: [
+                { text: "A. 完全同意，赢球才是硬道理", score: ["马丁内斯", "范戴克"] },
+                { text: "B. 偶尔还行", score: ["哈兰德", "迪亚斯"] },
+                { text: "C. 打出让人铭记的精彩名场面最重要", score: ["贝林厄姆", "梅西"] },
+                { text: "D. 完全不能接受，坚持漂亮足球", score: ["亚马尔", "姆巴佩"] }
+            ]
+        },
+        {
+            id: "Q5",
+            title: "你的竞技心态属于哪一种？",
+            options: [
+                { text: "A. 天生大心脏，越到决赛、生死战越亢奋，大赛超常发挥", score: ["姆巴佩", "马丁内斯"] },
+                { text: "B. 稳定型选手，大小比赛发挥统一，稳定靠谱", score: ["罗德里", "萨利巴", "范戴克"] },
+                { text: "C. 小赛封神，大赛心态容易崩掉", score: ["亚马尔", "哈兰德"] },
+                { text: "D. 状态两极分化，时而天神下凡，时而隐身", score: ["C 罗", "贝林厄姆"] }
+            ]
+        },
+        {
+            id: "Q6",
+            title: "下面哪种球队战术风格，是你最偏爱？",
+            options: [
+                { text: "A. 防守反击闪电战，等对手失误快速得分", score: ["姆巴佩", "哈兰德"] },
+                { text: "B. 极致的控球，反复传导磨灭对手的意志", score: ["梅西", "罗德里"] },
+                { text: "C. 奔放的桑巴舞者，美丽足球+英雄主义，观赏性拉满", score: ["亚马尔", "贝林厄姆"] },
+                { text: "D. 铁桶阵、摆大巴，主打零漏洞", score: ["范戴克", "迪亚斯", "萨利巴"] },
+                { text: "E. 高位逼抢，压迫对手，机会是靠自己抢出来的", score: ["迪亚斯"] }
+            ]
+        },
+        {
+            id: "Q7",
+            title: "比赛只剩最后五分钟，球队仍处于落后，你会怎么做？",
+            options: [
+                { text: "A. 化身队内气氛组，不停鼓励队友稳住心态，凝聚全队士气", score: ["范戴克", "迪亚斯", "马丁内斯"] },
+                { text: "B. 眼里只有破门得分，不顾一切持球突破、强攻射门", score: ["C 罗", "哈兰德", "姆巴佩"] },
+                { text: "C. 沉下心耐心蹲守，等待对手失误漏出破绽，一击制胜", score: ["亚马尔", "梅西"] },
+                { text: "D. 上前高压逼抢，压迫持球人，抢夺球权", score: ["贝林厄姆", "萨利巴", "罗德里", "哈兰德"] }
+            ]
+        },
+        {
+            id: "Q8",
+            title: "你最喜欢的球星赛场风格是？",
+            options: [
+                { text: "A. “圆月弯刀” ，任意球大师，脚法细腻，擅长长线布局", score: ["C 罗", "罗德里"] },
+                { text: "B. “彩虹过人”，极致脚下盘带技术，靠个人能力撕碎防线", score: ["梅西", "亚马尔"] },
+                { text: "C. “蝎子摆尾”的自信创意流球星，不走寻常路", score: ["C 罗", "姆巴佩"] },
+                { text: "D. “幽灵跑位“意识流，球商拉满，总能悄无声息出现在最关键得分点位", score: ["贝林厄姆", "范戴克", "梅西", "哈兰德"] }
+            ]
+        },
+        {
+            id: "Q9",
+            title: "你的球迷人格是？",
+            options: [
+                { text: "A. 互联网辩手，不回避对线吵架，常年蹲评论区争论 “梅西和 C 罗谁是 GOAT”", score: ["梅西", "C 罗"] },
+                { text: "B. 元老级老球迷，远古名场面如数家珍，当年的 “上帝之手”你至今还记得", score: ["范戴克", "萨利巴", "迪亚斯"] },
+                { text: "C. 冠军粉，评判标准唯荣誉和奖杯，总是说：“你是什么冠军？”", score: ["梅西", "姆巴佩", "马丁内斯"] },
+                { text: "D. 世界杯球迷，四年一次限定回归，刷短视频两天速成懂球帝", score: ["哈兰德", "亚马尔"] },
+                { text: "E. 凑热闹吃瓜型, 谁火我粉谁，看球的时候会问出：“什么是越位？”", score: ["C 罗", "贝林厄姆", "哈兰德"] }
+            ]
+        }
+    ];
+
+    const resultData = {
+        "梅西": { 
+            img: "messi", 
+            title: "长期主义者", 
+            subtitle: "梅西型", 
+            quote: "“真正的自由，是不被定义。”", 
+            labels: ["稳定", "细腻", "长期复利", "核心资产", "全域最优", "不设边界", "上帝视角"], 
+            desc: "你像 Messi 一样，不一定每一步都声势浩大，但总能在长期里证明价值。你更相信时间、积累和稳定输出，不喜欢频繁追涨杀跌。你对应的参考风格偏向是核心压舱石，重视全盘布局与长期盈利。同时，你不喜欢被框住。你的思维方式不是“选边站”，而是“全域最优解”——就像Messi在球场上的位置：不是前锋、不是中场、不是边路，却随时可以是任何角色。你对应的参考风格应当是自己的镜像：不执着于单一赛道，而是兼容消费电子、AI芯片、操作系统与网络通信等全球科技核心力量。投资最稀缺的能力不是选股，是跳出边界、看到全域——而这件事，其实你比想象中更擅长。" 
+        },
+        "C 罗": { 
+            img: "ronaldo", 
+            title: "征服者", 
+            subtitle: "C 罗型", 
+            quote: "“时间不会辜负自律的人。”", 
+            labels: ["自律", "目标感", "结果导向", "现金流意识", "进化", "复利信仰"], 
+            desc: "你像 Cristiano Ronaldo 一样，目标感非常强，喜欢清晰的结果和可见的回报。你不满足于“差不多”，更希望资产能够持续发挥作用。你对应的参考风格偏向更接近收益目标明确、重视分红和现金流的特质。C罗最恐怖的不是某一场进了几个球，而是二十年如一日地保持顶级输出——不追求短期盈利，但求可持续性。" 
+        },
+        "姆巴佩": { 
+            img: "mbappe", 
+            title: "疾行者", 
+            subtitle: "姆巴佩型", 
+            quote: "“这条边路，没人追得上。”", 
+            labels: ["速度", "爆发", "机会", "进攻性", "极速", "破局", "不可阻挡"], 
+            desc: "你像 Mbappé 一样，行动快、判断快，愿意在机会出现时果断出击。你对应的参考风格偏向更接近高弹性、偏进攻、相对能够接受一定波动，也希望抓住市场反弹机会。别人还在犹豫要不要入场的时候，你可能已经及时看到了潜在机遇——就像 Mbappé 看到对面左后卫重心偏了一下，下一秒他已经冲过去了。你的本能反应比大多数人快一拍。你相信真正的优势不是研究出来的，是在别人没反应过来之前先站上去。" 
+        },
+        "亚马尔": { 
+            img: "yamal", 
+            title: "新势力", 
+            subtitle: "亚马尔型", 
+            quote: "“你等的那个未来，我正在踢。”", 
+            labels: ["年轻", "未来感", "创新", "成长想象力", "不设限"], 
+            desc: "你像 Yamal 一样，对新事物敏锐，也愿意提前关注未来趋势。你对应的参考风格偏向不只看眼前稳定收益，更倾向关注全球AI、科技创新和新产业周期。Yamal 在17岁就已经首发世界杯半决赛——有人在等未来，有人已经站在了未来的球场上。你关注AI不是因为它火了，而是因为你从一开始就知道：这是下一代基础设施。" 
+        },
+        "哈兰德": { 
+            img: "haaland", 
+            title: "终结者", 
+            subtitle: "哈兰德型", 
+            quote: "“不花哨，只进球。”", 
+            labels: ["直接", "高效", "爆发力", "强执行"], 
+            desc: "你像 Haaland 一样，不喜欢绕弯，重视效率和关键突破。你对应的参考风格偏向愿意关注具备高成长空间、但也可能伴随较高波动的主题机会。你的优势不在于频繁操作，而在于判断什么时候该出手，就像Haaland一样，不需要一套复杂的过人动作——只需要在正确的时间站在正确的位置。" 
+        },
+        "贝林厄姆": { 
+            img: "bellingham", 
+            title: "双核引擎", 
+            subtitle: "贝林厄姆型", 
+            quote: "“两个半场，我都是主角。”", 
+            labels: ["全能", "成熟", "攻守兼备", "核心配置", "无缝切换"], 
+            desc: "你像 Bellingham 一样，不只会进攻，也能掌控整体节奏。你对应的参考风格偏向不喜欢单押一个方向，更看重核心资产和组合基础，Bellingham 可以在禁区内争顶，也可以回撤到本方禁区铲断——在进攻端跟得上，也能在防守端站得住。它不负责炫技，只负责让你在任何市场环境下都不散架。" 
+        },
+        "罗德里": { 
+            img: "rodri", 
+            title: "靠山", 
+            subtitle: "罗德里型", 
+            quote: "“我在的时候，一切风平浪静。”", 
+            labels: ["理性", "纪律", "控场", "宏观判断", "系统基石"], 
+            desc: "你像 Rodri 一样，冷静、稳定，习惯先看清局势再行动。你对应的参考风格偏向不太容易被短期情绪带走，更重视纪律、风险管理和策略匹配。有些市场在你的组合里就是这样的存在：与主流市场相关性低，拥有独立的货币周期和估值体系，在震荡时走出不一样的节奏。它覆盖全球核心企业，锚定不同产业基本面——不追热点，不抢反弹。真正的分散是配置不同驱动力的资产，而非买很多只股票。它就是那座低调但不可或缺的“减震器”。" 
+        },
+        "萨利巴": { 
+            img: "saliba", 
+            title: "隐盾", 
+            subtitle: "萨利巴型", 
+            quote: "“最好的防守，你注意不到。”", 
+            labels: ["稳健", "成长", "防守质量"], 
+            desc: "你像 Saliba 一样，既有年轻成长性，也有稳定防守感。你对应的参考风格偏向不一定追求最刺激的机会，但会关注基本面、质量和结构性优势。Saliba在阿森纳防线上最惊人的不是某一次飞铲，而是对手逐渐学会了“不从这一侧进攻”。组合里总需要有一侧——不是用来暴涨的，是用来在别人追涨杀跌的时候，你这头风平浪静的。你可能不是那种喜欢大声讨论投资策略的人。你的偏好可能不是高弹性的刺激，而是“让对手根本找不到机会”的结构性稳定。就像Saliba在阿森纳的防线上——没有华丽的飞铲，只有对手一次次无功而返。你在投资里选的那一侧，就是别人跌倒了才发现你从未站错的那一侧。无声，但有用。" 
+        },
+        "迪亚斯": { 
+            img: "dias", 
+            title: "铜墙铁壁", 
+            subtitle: "迪亚斯型", 
+            quote: "“风暴越大，越得有人站着。”", 
+            labels: ["强硬", "果断", "抗压", "敢承受波动"], 
+            desc: "你像 Rúben Dias 一样，面对高强度环境也有自己的判断和承受力。你对应的参考风格偏向对新型资产和高波动机会幷不完全排斥，但更适合把它作为组合中的卫星配置来看待。Dias不是传统意义上“安全”的中后卫——他敢于在高压对抗中做出果断出脚。例如加密货币在你的组合里也不是主仓位，而是那个“所有人都觉得有风险、但你知道它在结构上具有稀缺性”的卫星配置。你对风险的嗅觉可能比较敏锐——市场过热的时候你可能已经在减仓了，别人还在追的时候你可能已经锁住了底线。不是因为你悲观，是因为你见过什么叫“猝不及防”。Dias不是球队里进球的人，但他是当对手打反击时第一个站出来的那道铁壁。你不是把加密货币当成避险资产，而是把它当成组合里最锋利的矛——单独配置、控制仓位、敢输也敢赢，用最小的仓位博取最大的不对称回报。" 
+        },
+        "范戴克": { 
+            img: "vandijk", 
+            title: "定海神针", 
+            subtitle: "范戴克型", 
+            quote: "“时间站在我这边。”", 
+            labels: ["防守", "稳定", "抗压", "安全感"], 
+            desc: "你像 Van Dijk 一样，最重要的是先守住底线。你对应的参考风格偏向不喜欢大起大落，更看重安全感和抗风险能力。Van Dijk在利物浦的防线上站了十年——没有一个赛季的数据是“炸裂”的，但每一个赛季的数据都是“令人安心的”。避险属性较强的资产在你的组合里就是这种角色：不是用来进攻的，是用来在别人都倒下的那一刻，还立着的。Van Dijk不是每场比赛都抢风头的人，但当整条防线需要一个锚，他就是那个锚。有些东西的存在意义，不是让你赚快钱，而是让你在所有人都站不住的时候，还能站着。这才是“十年后再看”的底气。" 
+        },
+        "马丁内斯": { 
+            img: "martinez", 
+            title: "守门人", 
+            subtitle: "马丁内斯型", 
+            quote: "“他们负责逆转。我负责不让逆转发生。”", 
+            labels: ["安全感", "流动性", "防守底线", "关键守护", "底线", "关键时刻", "最后答案"], 
+            desc: "你像 Martínez 一样，是关键时刻的最后一道防线。你对应的参考风格偏向最重视资金的稳定性、流动性和安全垫，不喜欢让自己处于过度波动之中。Martínez在世界杯决赛扑出那颗点球的时候，整个阿根廷的心跳停了一秒——然后发现他还在那里。本币流动性资产就是你的“还在那里”：不带任何花哨的预期，只有流动性和安全垫。当前面10个人都冲上去了，你是守住底线的那一个。你偏向是那种在任何市场情绪里都不会被带跑偏的人。你比较在意“方向对不对”——不是一个季度的方向，而是这个国家未来五到十年的方向。赚钱很重要，但“站在哪条船上”比赚钱本身重要一百倍。" 
+        }
+    };
+
+    let currentStep = 0;
+    let userSelections = new Array(questions.length).fill(null); 
+
+    function renderQuestion() {
+        const q = questions[currentStep];
+        
+        document.getElementById('qNumberDisplay').innerText = `Q${currentStep + 1}`;
+        document.getElementById('progressText').innerText = `${currentStep + 1}/${questions.length}`;
+        const progressPercentage = ((currentStep + 1) / questions.length) * 100;
+        document.getElementById('progressBar').style.width = `${progressPercentage}%`;
+        document.getElementById('questionTitle').innerText = q.title;
+        
+        const optionsDiv = document.getElementById('optionsGroup');
+        optionsDiv.innerHTML = '';
+        
+        q.options.forEach((opt, index) => {
+            const match = opt.text.match(/^([A-Ea-e])\.\s*(.+)$/);
+            const letter = match ? match[1] : String.fromCharCode(65 + index);
+            const textContent = match ? match[2] : opt.text;
+
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            if (userSelections[currentStep] === index) btn.classList.add('selected');
+            
+            btn.innerHTML = `<div class="option-letter">${letter}</div><div class="option-text">${textContent}</div>`;
+            btn.onclick = () => { userSelections[currentStep] = index; renderQuestion(); };
+            optionsDiv.appendChild(btn);
+        });
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        prevBtn.style.visibility = currentStep === 0 ? 'hidden' : 'visible';
+        nextBtn.innerText = currentStep === questions.length - 1 ? "查看结果" : "下一题";
+
+        if (userSelections[currentStep] === null) {
+            nextBtn.disabled = true; nextBtn.classList.remove('active');
+        } else {
+            nextBtn.disabled = false; nextBtn.classList.add('active');
+        }
+    }
+
+    function prevQuestion() { if (currentStep > 0) { currentStep--; renderQuestion(); } }
+    
+    function nextQuestion() {
+        if (userSelections[currentStep] === null) return;
+        if (currentStep < questions.length - 1) { currentStep++; renderQuestion(); } 
+        else { calculateAndShowResult(); }
+    }
+
+    function calculateAndShowResult() {
+        let scores = {}; 
+        Object.keys(resultData).forEach(name => scores[name] = 0);
+
+        userSelections.forEach((selectedIndex, step) => {
+            if (selectedIndex !== null) {
+                const q = questions[step];
+                const selectedScores = q.options[selectedIndex].score;
+                selectedScores.forEach(name => { 
+                    if(scores.hasOwnProperty(name)) scores[name]++; 
+                });
+            }
+        });
+
+        let maxScore = Math.max(...Object.values(scores));
+        let tiedPlayers = Object.keys(scores).filter(p => scores[p] === maxScore);
+        let winner = tiedPlayers[0];
+        
+        if (tiedPlayers.length > 1) {
+            const q5Selection = userSelections[4];
+            if (q5Selection !== null) {
+                const q5ScoreList = questions[4].options[q5Selection].score;
+                const q5Winners = tiedPlayers.filter(p => q5ScoreList.includes(p));
+                if (q5Winners.length > 0) tiedPlayers = q5Winners;
+            }
+
+            if (tiedPlayers.length > 1) {
+                const q6Selection = userSelections[5];
+                if (q6Selection !== null) {
+                    const q6ScoreList = questions[5].options[q6Selection].score;
+                    const q6Winners = tiedPlayers.filter(p => q6ScoreList.includes(p));
+                    if (q6Winners.length > 0) tiedPlayers = q6Winners;
+                }
+            }
+
+            if (tiedPlayers.length > 1) {
+                const q3Selection = userSelections[2];
+                if (q3Selection !== null) {
+                    const q3ScoreList = questions[2].options[q3Selection].score;
+                    const q3Winners = tiedPlayers.filter(p => q3ScoreList.includes(p));
+                    if (q3Winners.length > 0) tiedPlayers = q3Winners;
+                }
+            }
+
+            if (tiedPlayers.length > 1) {
+                const randomIndex = Math.floor(Math.random() * tiedPlayers.length);
+                winner = tiedPlayers[randomIndex];
+            } else {
+                winner = tiedPlayers[0];
+            }
+        }
+
+        document.getElementById('quizPage').classList.add('hidden');
+        document.getElementById('resultPage').style.display = 'block';
+
+        const res = resultData[winner];
+        document.getElementById('resMainTitle').innerText = res.title;
+        document.getElementById('resSubTitle').innerText = res.subtitle;
+        document.getElementById('resQuote').innerText = res.quote;
+        document.getElementById('resDesc').innerText = res.desc;
+        
+        // 核心修复：更新后缀名为 .png 匹配客户提供的图片格式
+        document.getElementById('resImg').src = "images/" + res.img + ".png";
+
+        const labelDiv = document.getElementById('resLabels');
+        labelDiv.innerHTML = '';
+        res.labels.forEach(l => {
+            const span = document.createElement('span'); 
+            span.className = 'label-tag'; 
+            span.innerText = l;
+            labelDiv.appendChild(span);
+        });
+        
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function generateSharePoster() {
+        const shareBtn = document.getElementById('shareBtn');
+        const originalText = shareBtn.innerText;
+        shareBtn.innerText = "正在生成专属海报...";
+        shareBtn.disabled = true;
+
+        const actionBtns = document.getElementById('actionButtonsGroup');
+        actionBtns.classList.add('hidden');
+
+        setTimeout(() => {
+            const captureTarget = document.getElementById('captureTarget');
+            window.scrollTo(0, 0);
+
+            html2canvas(captureTarget, {
+                scale: 2, 
+                useCORS: true, 
+                backgroundColor: "#7b1216" 
+            }).then(canvas => {
+                actionBtns.classList.remove('hidden');
+                shareBtn.innerText = originalText;
+                shareBtn.disabled = false;
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                document.getElementById('generatedPosterImg').src = imgData;
+                document.getElementById('posterModal').classList.remove('hidden');
+
+            }).catch(err => {
+                console.error("生成海报失败:", err);
+                alert("抱歉，生成专属海报失败，请稍后重试。");
+                actionBtns.classList.remove('hidden');
+                shareBtn.innerText = originalText;
+                shareBtn.disabled = false;
+            });
+        }, 100);
+    }
+
+    function closePosterModal() {
+        document.getElementById('posterModal').classList.add('hidden');
+    }
+
+    renderQuestion();
+</script>
+
+</body>
+</html>
