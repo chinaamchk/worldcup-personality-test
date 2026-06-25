@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>排兵布陣 群星亮相 - 測測你的投資人格（只供娛樂使用）</title>
     
+    <!-- 引入 html2canvas 截图核心库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -125,11 +126,11 @@
         /* 隐形热区按钮 */
         .start-hotspot {
             position: absolute;
-            bottom: 7%; 
+            bottom: 16%; 
             left: 50%;
             transform: translateX(-50%); 
-            width: 55%;
-            height: 9%;
+            width: 60%; 
+            height: 10%;
             background-color: transparent; 
             cursor: pointer;
             z-index: 10;
@@ -226,19 +227,18 @@
             line-height: 1.4;
         }
         
-        /* 核心修复：背景透明化以适应透明的 PNG 图片 */
         .player-img-container { 
             width: 100%; 
             margin: 15px 0 25px; 
             border-radius: 16px; 
             overflow: hidden; 
-            background: transparent; /* 去除原本的白色背景 */
-            box-shadow: none; /* 去除卡片阴影，让悬浮更自然 */
+            background: transparent; 
+            box-shadow: none; 
         }
         #resImg { 
             width: 100%; 
             display: block; 
-            object-fit: contain; /* 改为 contain 防止变形 */
+            object-fit: contain; 
         }
         
         .labels-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; }
@@ -246,27 +246,47 @@
         
         .description { line-height: 1.8; font-size: 14px; color: var(--text-dark); text-align: justify; margin-bottom: 25px; font-weight: 500;}
         
-        /* 四个二维码 2x2 布局 */
+        /* 优化：二维码 1上3下 布局 */
         .qr-section { 
             display: flex; 
-            flex-wrap: wrap; 
-            justify-content: space-evenly; 
-            align-items: flex-start; 
+            flex-direction: column; 
+            align-items: center; 
             margin: 25px 0; 
             padding: 20px 0; 
             border-top: 1px dashed var(--border-light); 
-            gap: 20px 0; 
+            gap: 20px; 
+        }
+        .qr-top-row {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .qr-bottom-row {
+            display: flex;
+            justify-content: space-between; 
+            width: 100%;
         }
         .qr-box { 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             gap: 8px; 
-            width: 45%; 
         }
-        .qr-box img { 
-            width: 75px; 
-            height: 75px; 
+        .qr-top-row .qr-box img {
+            width: 85px; 
+            height: 85px;
+            object-fit: cover; 
+            border: 1px solid var(--border-light); 
+            border-radius: 6px; 
+            padding: 3px; 
+            background: #ffffff; 
+        }
+        .qr-bottom-row .qr-box {
+            width: 32%; 
+        }
+        .qr-bottom-row .qr-box img { 
+            width: 65px; 
+            height: 65px; 
             object-fit: cover; 
             border: 1px solid var(--border-light); 
             border-radius: 6px; 
@@ -274,7 +294,7 @@
             background: #ffffff; 
         }
         .qr-text { 
-            font-size: 12px; 
+            font-size: 11px; 
             color: var(--text-dark); 
             font-weight: 800; 
             text-align: center;
@@ -301,6 +321,7 @@
 
 <div class="app-container" id="captureTarget">
 
+    <!-- 第0层：语言选择页 -->
     <div id="langPage">
         <div class="header-logo-container" style="margin-bottom: 40px;">
             <img src="logo.png" alt="华夏基金 (香港)">
@@ -317,18 +338,24 @@
         </div>
     </div>
 
+    <!-- 第一层：首页海报视图 -->
     <div id="homePage">
-        <img src="home-bg.jpg" alt="首页海报" class="bg-img">
+        <!-- 🚨 修改了这里：默认背景图后缀改为 .png -->
+        <img id="homeBgImg" src="home-bg-sc.png" alt="首页海报" class="bg-img">
         <div class="start-hotspot" onclick="startQuiz()"></div>
     </div>
 
+    <!-- 第二层：答题和结果内容区 -->
     <div id="mainContent">
+        <!-- 顶部 Logo 区 -->
         <div class="header-logo-container">
             <img src="logo.png" alt="华夏基金 (香港)">
         </div>
 
+        <!-- 核心卡片区 -->
         <div class="card-container">
             
+            <!-- 答题页面 -->
             <div id="quizPage">
                 <div class="progress-header">
                     <div class="q-number" id="qNumberDisplay">Q1</div>
@@ -348,11 +375,13 @@
                     <button id="nextBtn" class="nav-btn next-btn" onclick="nextQuestion()">下一题</button>
                 </div>
 
+                <!-- 吉祥物 -->
                 <div class="mascot-container" id="mascotWrapper">
                     <img src="mascot.png" alt="华夏基金吉祥物">
                 </div>
             </div>
 
+            <!-- 结果页面 -->
             <div id="resultPage">
                 <div class="result-main-title" id="resMainTitle"></div>
                 <div class="result-sub-title" id="resSubTitle"></div>
@@ -366,22 +395,29 @@
 
                 <div class="description" id="resDesc"></div>
 
+                <!-- 优化：四个二维码位置 (1上3下 网格) -->
                 <div class="qr-section">
-                    <div class="qr-box">
-                        <img src="qr-1.png" alt="QR">
-                        <div class="qr-text">扫码参与测试</div>
+                    <!-- 上方：主测试链接 -->
+                    <div class="qr-top-row">
+                        <div class="qr-box">
+                            <img src="qr-1.png" alt="测试链接">
+                            <div class="qr-text">扫码参与测试</div>
+                        </div>
                     </div>
-                    <div class="qr-box">
-                        <img src="qr-2.png" alt="QR">
-                        <div class="qr-text">官方社交账号 1</div>
-                    </div>
-                    <div class="qr-box">
-                        <img src="qr-3.png" alt="QR">
-                        <div class="qr-text">官方社交账号 2</div>
-                    </div>
-                    <div class="qr-box">
-                        <img src="qr-4.png" alt="QR">
-                        <div class="qr-text">官方社交账号 3</div>
+                    <!-- 下方：三个社交媒体账号 -->
+                    <div class="qr-bottom-row">
+                        <div class="qr-box">
+                            <img src="qr-2.png" alt="社媒1">
+                            <div class="qr-text">官方社交账号 1</div>
+                        </div>
+                        <div class="qr-box">
+                            <img src="qr-3.png" alt="社媒2">
+                            <div class="qr-text">官方社交账号 2</div>
+                        </div>
+                        <div class="qr-box">
+                            <img src="qr-4.png" alt="社媒3">
+                            <div class="qr-text">官方社交账号 3</div>
+                        </div>
                     </div>
                 </div>
 
@@ -413,6 +449,15 @@
 
     function selectLanguage(langCode) {
         currentLanguage = langCode;
+        
+        const homeBg = document.getElementById('homeBgImg');
+        // 🚨 修改了这里：动态替换的路径也全部更新为 .png
+        if (langCode === 'tc') {
+            homeBg.src = 'home-bg-tc.png';
+        } else {
+            homeBg.src = 'home-bg-sc.png';
+        }
+
         document.getElementById('langPage').style.display = 'none';
         document.getElementById('homePage').style.display = 'flex';
         window.scrollTo({top: 0, behavior: 'smooth'}); 
@@ -582,7 +627,7 @@
             subtitle: "萨利巴型", 
             quote: "“最好的防守，你注意不到。”", 
             labels: ["稳健", "成长", "防守质量"], 
-            desc: "你像 Saliba 一样，既有年轻成长性，也有稳定防守感。你对应的参考风格偏向不一定追求最刺激的机会，但会关注基本面、质量和结构性优势。Saliba在阿森纳防线上最惊人的不是某一次飞铲，而是对手逐渐学会了“不从这一侧进攻”。组合里总需要有一侧——不是用来暴涨的，是用来在别人追涨杀跌的时候，你这头风平浪静的。你可能不是那种喜欢大声讨论投资策略的人。你的偏好可能不是高弹性的刺激，而是“让对手根本找不到机会”的结构性稳定。就像Saliba在阿森纳的防线上——没有华丽的飞铲，只有对手一次次无功而返。你在投资里选的那一侧，就是别人跌倒了才发现你从未站错的那一侧。无声，但有用。" 
+            desc: "你像 Saliba 一样，既有年轻成长性，也有稳定防守感。你对应的参考风格偏向不一定追求最刺激的机会，但会关注基本面、质量和结构性优势。Saliba在阿森纳防线上最惊人的不是某一次飞铲，而是对手逐渐学会了“不从这一侧进攻”。组合里总需要有一侧——不是用来暴涨的，是用来在别人追涨杀跌的时候，你这头风平浪静的。你可能不是那种喜欢大声讨论投资策略的人。你的偏好可能不是高弹性的刺激，而是“让对手根本找不到机会”的结构性稳定。就像Saliba在阿森纳的防线上——没有华丽的飞铲，只有对手一次次无功而返。你在投资里选的那一侧，针对的可能就是别人跌倒了才发现你从未站错的那一侧。无声，但有用。" 
         },
         "迪亚斯": { 
             img: "dias", 
@@ -720,8 +765,6 @@
         document.getElementById('resSubTitle').innerText = res.subtitle;
         document.getElementById('resQuote').innerText = res.quote;
         document.getElementById('resDesc').innerText = res.desc;
-        
-        // 核心修复：更新后缀名为 .png 匹配客户提供的图片格式
         document.getElementById('resImg').src = "images/" + res.img + ".png";
 
         const labelDiv = document.getElementById('resLabels');
