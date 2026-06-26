@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>排兵布陣 群星亮相 - 測測你的投資人格（只供娛樂使用）</title>
+    <title id="pageTitle">排兵布陣 群星亮相 - 測測你的投資人格（只供娛樂使用）</title>
     
-    <!-- 引入 html2canvas 截图核心库 -->
+    <link rel="preload" href="home-bg-tc.png" as="image">
+    <link rel="preload" href="logo-tc.png" as="image">
+    <link rel="preload" href="home-bg-sc.png" as="image">
+    <link rel="preload" href="logo-sc.png" as="image">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -321,14 +325,13 @@
 
 <div class="app-container" id="captureTarget">
 
-    <!-- 第0层：语言选择页 -->
     <div id="langPage">
         <div class="header-logo-container" style="margin-bottom: 40px;">
             <img src="logo.png" alt="华夏基金 (香港)">
         </div>
         
         <div class="lang-title">
-            请选择您的语言
+            請選擇您的語言
             <span>Please select your language</span>
         </div>
 
@@ -338,23 +341,18 @@
         </div>
     </div>
 
-    <!-- 第一层：首页海报视图 -->
     <div id="homePage">
         <img id="homeBgImg" src="home-bg-sc.png" alt="首页海报" class="bg-img">
         <div class="start-hotspot" onclick="startQuiz()"></div>
     </div>
 
-    <!-- 第二层：答题和结果内容区 -->
     <div id="mainContent">
-        <!-- 顶部 Logo 区 -->
         <div class="header-logo-container">
-            <img src="logo.png" alt="华夏基金 (香港)">
+            <img id="mainLogo" src="logo-sc.png" alt="华夏基金 (香港)">
         </div>
 
-        <!-- 核心卡片区 -->
         <div class="card-container">
             
-            <!-- 答题页面 -->
             <div id="quizPage">
                 <div class="progress-header">
                     <div class="q-number" id="qNumberDisplay">Q1</div>
@@ -374,13 +372,11 @@
                     <button id="nextBtn" class="nav-btn next-btn" onclick="nextQuestion()">下一题</button>
                 </div>
 
-                <!-- 吉祥物 -->
                 <div class="mascot-container" id="mascotWrapper">
                     <img src="mascot.png" alt="华夏基金吉祥物">
                 </div>
             </div>
 
-            <!-- 结果页面 -->
             <div id="resultPage">
                 <div class="result-main-title" id="resMainTitle"></div>
                 <div class="result-sub-title" id="resSubTitle"></div>
@@ -394,39 +390,34 @@
 
                 <div class="description" id="resDesc"></div>
 
-                <!-- 优化：四个二维码位置 (1上3下 网格) -->
                 <div class="qr-section">
-                    <!-- 上方：主测试链接 -->
                     <div class="qr-top-row">
                         <div class="qr-box">
                             <img src="qr-1.png" alt="测试链接">
-                            <div class="qr-text">扫码参与测试</div>
+                            <div class="qr-text" id="qrTestText">扫码参与测试</div>
                         </div>
                     </div>
-                    <!-- 下方：三个社交媒体账号 -->
                     <div class="qr-bottom-row">
                         <div class="qr-box">
                             <img src="qr-2.png" alt="社媒1">
-                            <div class="qr-text">官方社交账号 1</div>
+                            <div class="qr-text" id="qrSocial1Text">官方社交账号 1</div>
                         </div>
                         <div class="qr-box">
                             <img src="qr-3.png" alt="社媒2">
-                            <div class="qr-text">官方社交账号 2</div>
+                            <div class="qr-text" id="qrSocial2Text">官方社交账号 2</div>
                         </div>
                         <div class="qr-box">
                             <img src="qr-4.png" alt="社媒3">
-                            <div class="qr-text">官方社交账号 3</div>
+                            <div class="qr-text" id="qrSocial3Text">官方社交账号 3</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="disclaimer">
-                    投资涉及风险，包括可能损失本金。本文所载的任何预测、展望或意见仅供阁下参考，幷不保证实现。本文件所载资讯反映截至发布日之市场情况与我方观点，如有变更，恕不另行通知。本资料之发行人为华夏基金(香港)有限公司。此资料幷未被香港证券及期货事务监察委员会所审阅。
-                </div>
+                <div class="disclaimer" id="disclaimerText"></div>
 
                 <div class="action-buttons" id="actionButtonsGroup">
                     <button class="share-btn" id="shareBtn" onclick="generateSharePoster()">生成专属结果海报</button>
-                    <button class="restart-btn" onclick="location.reload()">重新测试</button>
+                    <button class="restart-btn" id="restartBtn" onclick="location.reload()">重新测试</button>
                 </div>
 
             </div>
@@ -437,7 +428,7 @@
 
 <div id="posterModal" class="poster-modal hidden">
     <div class="poster-content">
-        <div class="poster-tip">👉 长按下方图片保存至相册分享</div>
+        <div class="poster-tip" id="posterTipText">👉 长按下方图片保存至相册分享</div>
         <img id="generatedPosterImg" src="" alt="分享海报">
         <div class="close-modal-btn" onclick="closePosterModal()">×</div>
     </div>
@@ -446,15 +437,323 @@
 <script>
     let currentLanguage = 'sc'; 
 
+    // 全局静态 UI 文字多语言配置
+    const uiText = {
+        sc: {
+            title: "排兵布阵 群星亮相 - 测测你的投资人格（只供娱乐使用）",
+            prevBtn: "上一题",
+            nextBtn: "下一题",
+            resultBtn: "查看结果",
+            qrTest: "扫码参与测试",
+            qrSocial1: "官方社交账号 1",
+            qrSocial2: "官方社交账号 2",
+            qrSocial3: "官方社交账号 3",
+            shareBtn: "生成专属结果海报",
+            restartBtn: "重新测试",
+            posterTip: "👉 长按下方图片保存至相册分享",
+            generating: "正在生成专属海报...",
+            generateFail: "抱歉，生成专属海报失败，请稍后重试。",
+            disclaimer: "投资涉及风险，包括可能损失本金。本文所载的任何预测、展望或意见仅供阁下参考，并不保证实现。本文件所载资讯反映截至发布日之市场情况与我方观点，如有变更，恕不另行通知。本资料之发行人为华夏基金(香港)有限公司。此资料并未被香港证券及期货事务监察委员会所审阅。"
+        },
+        tc: {
+            title: "排兵布陣 群星亮相 - 測測你的投資人格（只供娛樂使用）",
+            prevBtn: "上一題",
+            nextBtn: "下一題",
+            resultBtn: "查看結果",
+            qrTest: "掃碼參與測試",
+            qrSocial1: "官方社交帳號 1",
+            qrSocial2: "官方社交帳號 2",
+            qrSocial3: "官方社交帳號 3",
+            shareBtn: "生成專屬結果海報",
+            restartBtn: "重新測試",
+            posterTip: "👉 長按下方圖片保存至相簿分享",
+            generating: "正在生成專屬海報...",
+            generateFail: "抱歉，生成專屬海報失敗，請稍後重試。",
+            disclaimer: "本文章內的人格測試未必準確, 本文只供娛樂用途, 並不構成任何投資建議。投資涉及風險，包括可能損失本金。本文所載的任何預測、展望或意見僅供閣下參考，並不保證實現。本文件所載資訊反映截至發布日之市場情况與我方觀點，如有變更，恕不另行通知。本資料之發行人爲華夏基金(香港)有限公司。此資料並未被香港證券及期貨事務監察委員會所審閱。"
+        }
+    };
+
+    // 双语题库配置
+    const quizData = [
+        {
+            id: "Q1",
+            title: {
+                sc: "假设你化身场上球员，对阵完全陌生的对手，开场你会怎么踢？",
+                tc: "假設你化身場上球員，對陣完全陌生嘅對手，開場你會點踢？"
+            },
+            options: [
+                { text: { sc: "A. 先观察对手战术，绝不盲目冲，摸清底细再动脚", tc: "A. 先觀察對手戰術，絕唔會盲目衝前，摸清底細先再出腳" }, score: ["messi", "martinez"] },
+                { text: { sc: "B. 开局直接全线压上猛冲，靠气势压制对手，主打一个先发制人", tc: "B. 開局直接全線壓上猛衝，靠氣勢壓制對手，主打先發制人" }, score: ["mbappe", "ronaldo"] },
+                { text: { sc: "C. 不按常规出牌，靠灵光一现制造意外惊喜", tc: "C. 唔按常規出牌，靠靈光一現製造意外驚喜" }, score: ["yamal", "haaland"] },
+                { text: { sc: "D. 牢牢锁死中场球权，稳扎稳打控节奏，绝不轻易丢球", tc: "D. 牢牢鎖死中場控球權，穩紮穩打控住節奏，絕不輕易失球" }, score: ["bellingham", "rodri"] }
+            ]
+        },
+        {
+            id: "Q2",
+            title: {
+                sc: "球队比分落后 1 球，场上局势吃紧，你的第一选择是？",
+                tc: "球隊落後 1 球，場上局勢緊急，你嘅第一選擇係…"
+            },
+            options: [
+                { text: { sc: "A. 稳住阵脚，耐心等待对手露出破绽，不急于强攻", tc: "A. 企穩陣腳，耐心等待對手露出破綻，唔急於強攻" }, score: ["rodri", "bellingham"] },
+                { text: { sc: "B. 全员火力拉满疯狂进攻，不惜代价快速扳平比分", tc: "B. 全員火力全開瘋狂進攻，不惜代價快速扳平" }, score: ["ronaldo", "haaland", "mbappe"] },
+                { text: { sc: "C. 切换全新战术打法，针对性抓对方防守短板", tc: "C. 切換全新戰術打法，針對性捉住對方防守漏洞" }, score: ["dias", "saliba", "messi", "yamal"] },
+                { text: { sc: "D. 信任队内核心大腿，按原定战术稳步执行，不轻易乱改", tc: "D. 信任隊內核心，按原定戰術穩步執行，唔輕易亂改" }, score: ["martinez", "vandijk"] }
+            ]
+        },
+        {
+            id: "Q3",
+            title: {
+                sc: "你最欣赏以下哪种球员？",
+                tc: "你最欣賞以下邊種球員？"
+            },
+            options: [
+                { text: { sc: "A. “控球大师”：球队的进攻发动机", tc: "A. 「控球大師」：球隊嘅進攻發動機" }, score: ["bellingham", "rodri", "messi"] },
+                { text: { sc: "B. “关键先生”：读秒绝杀、一锤定音", tc: "B. 「關鍵先生」：讀秒絕殺、一錘定音" }, score: ["ronaldo", "mbappe", "bellingham"] },
+                { text: { sc: "C. “未来之星”：新生代超新星，天赋拉满", tc: "C. 「未來之星」：新生代超新星，天賦非凡" }, score: ["yamal", "haaland"] },
+                { text: { sc: "D. “叹息之墙”：顶级门神 / 铁卫，零封专业户", tc: "D. 「嘆息之牆」：頂級門神 / 鐵衛，零封專業戶" }, score: ["vandijk", "dias", "saliba", "martinez"] }
+            ]
+        },
+        {
+            id: "Q4",
+            title: {
+                sc: "你怎么看待“赢球最重要，踢得丑无所谓”这句话？",
+                tc: "你點樣睇“贏波最重要，踢得衰無所謂”呢句說話？"
+            },
+            options: [
+                { text: { sc: "A. 完全同意，赢球才是硬道理", tc: "A. 完全同意，贏波先係王道" }, score: ["martinez", "vandijk"] },
+                { text: { sc: "B. 偶尔还行", tc: "B. 間唔中踢得衰少少無所謂啦" }, score: ["haaland", "dias"] },
+                { text: { sc: "C. 打出让人铭记的精彩名场面最重要", tc: "C. 踢出令人銘記嘅精彩時刻最重要" }, score: ["bellingham", "messi"] },
+                { text: { sc: "D. 完全不能接受，坚持漂亮足球", tc: "D. 完全唔能夠接受，堅持踢靚波" }, score: ["yamal", "mbappe"] }
+            ]
+        },
+        {
+            id: "Q5",
+            title: {
+                sc: "你的竞技心态属哪一种？",
+                tc: "你嘅競技心態屬於邊一種？"
+            },
+            options: [
+                { text: { sc: "A. 天生大心脏，越到决赛、生死战越亢奋，大赛超常发挥", tc: "A. 天生大心臟，越到決賽、生死戰越亢奮，大賽超常發揮" }, score: ["mbappe", "martinez"] },
+                { text: { sc: "B. 稳定型选手，大小比赛发挥统一，稳定靠谱", tc: "B. 穩定型選手，大細比賽發揮統一，穩定可靠" }, score: ["rodri", "saliba", "vandijk"] },
+                { text: { sc: "C. 小赛封神，大赛心态容易崩掉", tc: "C. 細賽封神，大賽容易心態崩潰" }, score: ["yamal", "haaland"] },
+                { text: { sc: "D. 状态两极分化，时而天神下凡，时而隐身", tc: "D. 狀態兩極分化，時而天神下凡，時而隱形" }, score: ["ronaldo", "bellingham"] }
+            ]
+        },
+        {
+            id: "Q6",
+            title: {
+                sc: "下面哪种球队战术风格，是你最偏爱？",
+                tc: "以下邊種球隊戰術風格，係你最偏愛？"
+            },
+            options: [
+                { text: { sc: "A. 防守反击闪电战，等对手失误快速得分", tc: "A. 防守反擊閃電戰，等對手失誤快速得分" }, score: ["mbappe", "haaland"] },
+                { text: { sc: "B. 极致的控球，反复传导磨灭对手的意志", tc: "B. 極致控球，反覆傳導磨滅對手意志" }, score: ["messi", "rodri"] },
+                { text: { sc: "C. 奔放的桑巴舞者，美丽足球+英雄主义，观赏性拉满", tc: "C. 奔放嘅森巴舞者，漂亮足球 + 英雄主義，觀賞性爆燈" }, score: ["yamal", "bellingham"] },
+                { text: { sc: "D. 铁桶阵、摆大巴，主打零漏洞", tc: "D. 鐵桶陣、泊大巴，主打零漏洞" }, score: ["vandijk", "dias", "saliba"] },
+                { text: { sc: "E. 高位逼抢，压迫对手，机会是靠自己抢出来的", tc: "E. 高位壓迫，壓迫對手，機會係靠自己搶出嚟" }, score: ["dias"] }
+            ]
+        },
+        {
+            id: "Q7",
+            title: {
+                sc: "比赛只剩最后五分钟，球队仍处于落后，你会怎么做？",
+                tc: "比賽只剩最後五分鐘，球隊仍然落後，你會點做？"
+            },
+            options: [
+                { text: { sc: "A. 化身队内气氛组，不停鼓励队友稳住心态，凝聚全队士气", tc: "A. 化身應援隊長，不停鼓勵隊友企穩心態，凝聚全隊士氣" }, score: ["vandijk", "dias", "martinez"] },
+                { text: { sc: "B. 眼里只有破门得分，不顾一切持球突破、强攻射门", tc: "B. 眼裡只有破門得分，不顧一切持球突破、強攻射門" }, score: ["ronaldo", "haaland", "mbappe"] },
+                { text: { sc: "C. 沉下心耐心蹲守，等待对手失误漏出破绽，一击制胜", tc: "C. 沉住氣耐心死守，等待對手失誤露出破綻，一擊制勝" }, score: ["yamal", "messi"] },
+                { text: { sc: "D. 上前高压逼抢，压迫持球人，抢夺球权", tc: "D. 上前高壓逼搶，壓迫持球者，搶奪球權" }, score: ["bellingham", "saliba", "rodri", "haaland"] }
+            ]
+        },
+        {
+            id: "Q8",
+            title: {
+                sc: "你最喜欢的球星赛场风格是？",
+                tc: "你最鍾意嘅球星賽場風格係？"
+            },
+            options: [
+                { text: { sc: "A. “圆月弯刀” ，任意球大师，脚法细腻，擅长长线布局", tc: "A.「圓月彎刀」，罰球大師，腳法細膩，擅長長線佈局" }, score: ["ronaldo", "rodri"] },
+                { text: { sc: "B. “彩虹过人”，极致脚下盘带技术，靠个人能力撕碎防线", tc: "B.「彩虹過人」，極致腳下盤球技術，靠個人能力撕破防線" }, score: ["messi", "yamal"] },
+                { text: { sc: "C. “蝎子摆尾”的自信创意流球星，不走寻常路", tc: "C.「蠍子擺尾」嘅自信創意流球星，唔行尋常嘅路" }, score: ["ronaldo", "mbappe"] },
+                { text: { sc: "D. “幽灵跑位“意识流，球商拉满，总能悄无声息出现在最关键得分点位", tc: "D.「幽靈走位」意識流，足球智商爆棚，總能悄無聲息出現喺在最關鍵得分位置" }, score: ["bellingham", "vandijk", "messi", "haaland"] }
+            ]
+        },
+        {
+            id: "Q9",
+            title: {
+                sc: "你的球迷人格是？",
+                tc: "你嘅球迷人格係？"
+            },
+            options: [
+                { text: { sc: "A. 互联网辩手，不回避对线吵架，常年蹲评论区争论 “梅西和 C 罗谁是 GOAT”", tc: "A. 網絡辯手，正面迎擊，長年駐足留言區爭論「美斯和 C 朗邊個係 GOAT」" }, score: ["messi", "ronaldo"] },
+                { text: { sc: "B. 元老级老球迷，远古名场面如数家珍，当年的 “上帝之手”你至今还记得", tc: "B. 元老級球迷，遠古名場面如數家珍，當年嘅「上帝之手」而家都仲記得" }, score: ["vandijk", "saliba", "dias"] },
+                { text: { sc: "C. 冠军粉，评判标准唯荣誉和奖杯，总是说：“你是什么冠军？”", tc: "C. 冠軍粉，評判標準只有榮譽同獎盃，成日講：「你隊波拎咗咩盃先？」" }, score: ["messi", "mbappe", "martinez"] },
+                { text: { sc: "D. 世界杯球迷，四年一次限定回归，刷短视频两天速成懂球帝", tc: "D. 世界盃球迷，四年一次限定回歸，碌短片兩日速成足球專家" }, score: ["haaland", "yamal"] },
+                { text: { sc: "E. 凑热闹吃瓜型, 谁火我粉谁，看球的时候会问出：“什么是越位？”", tc: "E. 湊熱鬧食花生型，邊個紅就鍾意邊個，睇波嘅時候會問：「咩係越位？」" }, score: ["ronaldo", "bellingham", "haaland"] }
+            ]
+        }
+    ];
+
+    // 双语结果库配置
+    const resultDataConfig = {
+        "messi": { 
+            img: "messi", 
+            sc: {
+                title: "长期主义者", subtitle: "梅西型", quote: "“真正的自由，是不被定义。”", labels: ["稳定", "细腻", "长期复利", "核心资产", "全域最优", "不设边界", "上帝视角"], 
+                desc: "你像 Messi 一样，不一定每一步都声势浩大，但总能在长期里证明价值。你更相信时间、积累和稳定输出，不喜欢频繁追涨杀跌。\n\n你对应的参考风格偏向是核心压舱石，重视全盘布局与长期盈利。同时，你不喜欢被框住。你的思维方式不是“选边站”，而是“全域最优解”——就像Messi在球场上的位置：不是前锋、不是中场、不是边路，却随时可以是任何角色。你对应的参考风格应当是自己的镜像：不执着于单一赛道，而是兼容消费电子、AI芯片、操作系统与网络通信等全球科技核心力量。投资最稀缺的能力不是选股，是跳出边界、看到全域——而这件事，其实你比想象中更擅长。" 
+            },
+            tc: {
+                title: "長期主義者", subtitle: "美斯型", quote: "「真正嘅自由，係不被定義。」", labels: ["穩定", "細膩", "長期複利", "核心資產", "最佳化", "不設邊界", "上帝視角"], 
+                desc: "你似 Messi 一樣，唔一定每一步都聲勢浩大，但總能夠喺長期入面證明價值。你更相信時間、累積同穩定輸出，唔鍾意頻繁追漲殺跌。\n\n你對應嘅參考風格係核心壓倉石，重視全盤佈局同長期盈利。同時，你唔鍾意被框住。你嘅思維方式唔係「選邊企」，而係「最佳化」——就好似 Messi 喺球場上嘅位置：唔係前鋒、唔係中場、唔係邊路，而隨時可以係任何角色。你對應嘅參考風格唔執着於單一賽道，而係兼容消費電子、AI 晶片、作業系統與網絡通訊等環球科技核心力量。投資最稀缺嘅能力唔係選股，係跳出邊界、睇晒全方位——而呢樣嘢，其實你比想像中更擅長。" 
+            }
+        },
+        "ronaldo": { 
+            img: "ronaldo", 
+            sc: {
+                title: "征服者", subtitle: "C 罗型", quote: "“时间不会辜负自律的人。”", labels: ["自律", "目标感", "结果导向", "现金流意识", "进化", "复利信仰"], 
+                desc: "你像 Cristiano Ronaldo 一样，目标感非常强，喜欢清晰的结果和可见的回报。你不满足于“差不多”，更希望资产能够持续发挥作用。\n\n你对应的参考风格偏向更接近收益目标明确、重视分红和现金流的特质。C罗最恐怖的不是某一场进了几个球，而是二十年如一日地保持顶级输出——不追求短期盈利，但求可持续性。" 
+            },
+            tc: {
+                title: "征服者", subtitle: "C 朗型", quote: "「時間唔會辜負自律嘅人。」", labels: ["自律", "目標感", "結果導向", "現金流意識", "進化", "複利信仰"], 
+                desc: "你似 Cristiano Ronaldo 一樣，目標感非常強，鍾意清晰嘅結果同可見嘅回報。你唔滿足於「差唔多」，更希望資產能夠持續發揮作用。\n\n你對應嘅參考風格偏向更接近收益目標明確、重視股息同現金流嘅特質。C 朗最恐怖嘅唔係某一場入咗幾多球，而係二十年如一日咁保持頂級輸出——唔追求短期盈利，但求可持續性。" 
+            }
+        },
+        "mbappe": { 
+            img: "mbappe", 
+            sc: {
+                title: "疾行者", subtitle: "姆巴佩型", quote: "“这条边路，没人追得上。”", labels: ["速度", "爆发", "机会", "进攻性", "极速", "破局", "不可阻挡"], 
+                desc: "你像 Mbappé 一样，行动快、判断快，愿意在机会出现时果断出击。\n\n你对应的参考风格偏向更接近高弹性、偏进攻、相对能够接受一定波动，也希望抓住市场反弹机会。别人还在犹豫要不要入场的时候，你可能已经及时看到了潜在机遇——就像Mbappé看到对面左后卫重心偏了一下，下一秒他已经冲过去了。你的本能反应比大多数人快一拍。你相信真正的优势不是研究出来的，是在别人没反应过来之前先站上去。" 
+            },
+            tc: {
+                title: "疾行者", subtitle: "麥巴比型", quote: "「呢條邊路，冇人追得上。」", labels: ["速度", "爆發", "機會", "進攻性", "極速", "破局", "不可阻擋"], 
+                desc: "你似 Mbappé 一樣，行動快、判斷快，願意喺機會出現時果斷出擊。\n\n你對應嘅參考風格偏向更接近高彈性、偏進攻、相對能夠接受一定波動，亦希望抓住市場反彈機會。人哋仲猶豫緊入唔入場嘅時候，你可能已經及時睇到潛在機遇——就好似 Mbappé 見到對面左閘重心偏咗一下，下一秒佢已經衝咗過去。你嘅本能反應比大多數人快一拍。你相信真正嘅優勢唔係研究出嚟，係喺人哋未反應過嚟之前先企上去。" 
+            }
+        },
+        "yamal": { 
+            img: "yamal", 
+            sc: {
+                title: "新势力", subtitle: "亚马尔型", quote: "“你等的那个未来，我正在踢。”", labels: ["年轻", "未来感", "创新", "成长想象力", "不设限"], 
+                desc: "你像 Yamal 一样，对新事物敏锐，也愿意提前关注未来趋势。\n\n你对应的参考风格偏向不只看眼前稳定收益，更倾向关注全球AI、科技创新和新产业周期。Yamal在17岁就已经首发世界杯半决赛——有人在等未来，有人已经站在了未来的球场上。你关注AI不是因为它火了，而是因为你从一开始就知道：这是下一代基础设施。" 
+            },
+            tc: {
+                title: "新勢力", subtitle: "也馬型", quote: "「你等緊嘅未來，我正喺度踢。」", labels: ["年輕", "未來感", "創新", "增長想像力", "不設限"], 
+                desc: "你似 Yamal 一樣，對新事物敏銳，亦願意提前關注未來趨勢。\n\n你對應嘅參考風格偏向唔只睇眼前穩定收益，更傾向關注環球 AI、科技創新和新產業週期。Yamal 喺 17 歲已經正選出戰世界盃四強——有人仲等緊未來，有人已經企咗喺未來嘅球場上。你關注 AI 唔係因為佢紅咗，而係因為你由一開始就知道：呢個係下一代嘅基礎設施。" 
+            }
+        },
+        "haaland": { 
+            img: "haaland", 
+            sc: {
+                title: "终结者", subtitle: "哈兰德型", quote: "“不花哨，只进球。”", labels: ["直接", "高效", "爆发力", "强执行"], 
+                desc: "你像 Haaland 一样，不喜欢绕弯，重视效率和关键突破。\n\n你对应的参考风格偏向愿意关注具备高成长空间、但也可能伴随较高波动的主题机会。你的优势不在于频繁操作，而在于判断什么时候该出手，就像Haaland一样，不需要一套复杂的过人动作——只需要在正确的时间站在正确的位置。" 
+            },
+            tc: {
+                title: "終結者", subtitle: "夏蘭特型", quote: "「唔花巧，只入波。」", labels: ["直接", "高效", "爆發力", "執行力強"], 
+                desc: "你似 Haaland 一樣，唔鍾意轉彎，重視效率同關鍵突破。\n\n你對應嘅參考風格偏向願意關注具備高增長空間、但亦可能伴隨較高波動嘅主題機會。你嘅優勢唔在於頻繁操作，而在於判斷幾時應該出手，就好似 Haaland 一樣，唔需要一套複雜嘅過人動作——只需要喺正確嘅時間企喺正確嘅位置。" 
+            }
+        },
+        "bellingham": { 
+            img: "bellingham", 
+            sc: {
+                title: "双核引擎", subtitle: "贝林厄姆型", quote: "“两个半场，我都是主角。”", labels: ["全能", "成熟", "攻守兼备", "核心配置", "无缝切换"], 
+                desc: "你像 Bellingham 一样，不只会进攻，也能掌控整体节奏。\n\n你对应的参考风格偏向不喜欢单押一个方向，更看重核心资产和组合基础，Bellingham可以在禁区内争顶，也可以回撤到本方禁区铲断——在进攻端跟得上，也能在防守端站得住。像 Bellingham一样，不炫技，任何市场环境下维持基本盘。" 
+            },
+            tc: {
+                title: "雙核引擎", subtitle: "比寧咸型", quote: "「兩個半場，我都係主角。」", labels: ["全能", "成熟", "攻守兼備", "核心配置", "無縫切換"], 
+                desc: "你似 Bellingham 一樣，唔只會進攻，亦能掌控整體節奏。\n\n你對應嘅參考風格偏向唔鍾意單押一個方向，更睇重核心資產和組合基礎。Bellingham 可以喺禁區爭頂，都可以回撤到本方禁區剷截——攻得上，亦能夠守得穩。好似Bellingham 一樣，唔賣弄技術，任何市場環境下都維持到基本盤。" 
+            }
+        },
+        "rodri": { 
+            img: "rodri", 
+            sc: {
+                title: "靠山", subtitle: "罗德里型", quote: "“我在的时候，一切风平浪静。”", labels: ["理性", "纪律", "控场", "宏观判断", "系统基石"], 
+                desc: "你像 Rodri 一样，冷静、稳定，习惯先看清局势再行动。你对应的参考风格偏向不太容易被短期情绪带走，更重视纪律、风险管理和策略匹配。\n\n有些市场在你的组合里就是这样的存在：与主流市场相关性低，拥有独立的货币周期和估值体系，在震荡时走出不一样的节奏。可能偏向关注全球核心企业，锚定不同产业基本面——不追热点，不抢反弹。真正的分散是配置不同驱动力的资产，而非买很多只股票。就像一座低调但不可或缺的“减震器”。" 
+            },
+            tc: {
+                title: "靠山", subtitle: "洛迪型", quote: "「我喺度嘅時候，一切風平浪靜。」", labels: ["理性", "紀律", "控場", "宏觀判斷", "系統基石"], 
+                desc: "你似 Rodri 一樣，冷靜、穩定，習慣先睇清局勢再行動。你對應嘅參考風格偏向唔太容易被短期情緒帶走，更重視紀律、風險管理和策略配對。\n\n有啲市場喺你嘅組合入面就係咁嘅存在：與主流市場相關性低，擁有獨立嘅貨幣週期同估值體系，喺震盪時走出不一樣嘅節奏。可能偏向關注環球核心企業，錨定唔同產業基本面——唔追熱點，唔搶反彈。真正嘅分散係配置唔同驅動力嘅資產，而唔係買好多隻股票。就好似嗰座低調但不可或缺嘅「減震器」。" 
+            }
+        },
+        "saliba": { 
+            img: "saliba", 
+            sc: {
+                title: "隐盾", subtitle: "萨利巴型", quote: "“最好的防守，你注意不到。”", labels: ["稳健", "成长", "防守质量"], 
+                desc: "你像 Saliba 一样，既有年轻成长性，也有稳定防守感。你对应的参考风格偏向不一定追求最刺激的机会，但会关注基本面、质量和结构性优势。\n\nSaliba在阿森纳防线上最惊人的不是某一次飞铲，而是对手逐渐学会了“不从这一侧进攻”。组合里总需要有一侧——不是用来暴涨的，是用来在别人追涨杀跌的时候，你这头相对风平浪静的。你可能不是那种喜欢大声讨论投资策略的人。你的偏好可能不是高弹性的刺激，而是“让对手根本找不到机会”的结构性稳定。就像Saliba在阿森纳的防线上——没有华丽的飞铲，只有对手一次次无功而返。你在投资里选的那一侧，就是别人跌倒了才发现你从未站错的那一侧。无声，但有用。" 
+            },
+            tc: {
+                title: "隱盾", subtitle: "沙利巴型", quote: "「最好嘅防守，你察覺唔到。」", labels: ["穩健", "成長", "防守質素"], 
+                desc: "你似 Saliba 一樣，既有年輕成長性，亦有穩定防守感。你對應嘅參考風格偏向唔一定追求最刺激嘅機會，但會關注基本面、質素和結構性優勢。\n\nSaliba 喺阿仙奴防線上最驚人嘅唔係某一次飛剷，而係對手逐漸學識咗「唔從呢一邊進攻」。組合入面總需要有一邊——唔係用嚟爆升，係用嚟喺人哋追漲殺跌嘅時候，你呢頭相對風平浪靜。你可能唔係嗰種鍾意大聲討論投資策略嘅人。你嘅偏好可能唔係高彈性嘅刺激，而係「令對手根本搵唔到機會」嘅結構性穩定。就好似 Saliba 喺阿仙奴嘅防線上——冇華麗嘅飛剷，只有對手一次次無功而返。你喺投資入面揀嘅嗰一邊，就係人哋跌咗先發現你從未企錯嘅嗰一邊。無聲，但有用。" 
+            }
+        },
+        "dias": { 
+            img: "dias", 
+            sc: {
+                title: "铜墙铁壁", subtitle: "迪亚斯型", quote: "“风暴越大，越得有人站着。”", labels: ["强硬", "果断", "抗压", "敢承受波动"], 
+                desc: "你像 Luis Díaz一样，面对高强度环境也有自己的判断和承受力。你对应的参考风格偏向对新型资产和高波动机会并不完全排斥，但更适合把它作为组合中的卫星配置来看待。Díaz不是传统意义上“安全”的中后卫——他敢于在高压对抗中做出果断出脚。例如加密货币在你的组合里也不是主仓位，而是那个“所有人都觉得有风险、但你知道它在结构上具有稀缺性”的卫星配置。\n\n你对风险的嗅觉可能比较敏锐——市场过热的时候你可能已经在减仓了，别人还在追的时候你可能已经锁住了底线。不是因为你悲观，是因为你见过什么叫“猝不及防”。Díaz不是球队里进球的人，但他是当对手打反击时第一个站出来的那道铁壁。打个比方，你可能不是把加密货币当成避险资产，而是把它当成组合里最锋利的矛——单独配置、控制仓位、敢输也敢赢，用最小的仓位博取最大的不对称回报。" 
+            },
+            tc: {
+                title: "銅牆鐵壁", subtitle: "迪亞斯型", quote: "「風暴越大，越要有人企喺度。」", labels: ["強硬", "果斷", "抗壓", "敢承受波動"], 
+                desc: "你似 Luis Díaz一樣，面對高強度環境都有自己嘅判斷和承受力。你對應嘅參考風格偏向對新型資產同高波動機會並唔完全排斥，但更適合作為組合入面嘅衞星配置嚟看待。Díaz 唔係傳統意義上「安全」嘅中堅——佢敢於喺高壓對抗中做出果斷出腳。例如加密貨幣喺你嘅組合入面都唔係主倉位，而係嗰個「人人都覺得有風險、但你知道佢喺結構上具有稀缺性」嘅衞星配置。\n\n你對風險嘅嗅覺可能比較敏銳——市場過熱嘅時候你可能已經減倉，人哋仲追緊嘅時候你可能已經鎖住咗底線。唔係因為你悲觀，係因為你見過咩叫「猝不及防」。Díaz 唔係球隊入面入波嘅人，但佢係當對手打反擊時第一個企出嚟嗰道鐵壁。打個譬喻，你可能唔會將加密貨幣當成避險資產，而係將佢當成組合入面最鋒利嘅矛——單獨配置、控制倉位、敢輸亦敢贏，用最細嘅倉位博取最大嘅不對稱回報。" 
+            }
+        },
+        "vandijk": { 
+            img: "vandijk", 
+            sc: {
+                title: "定海神针", subtitle: "范戴克型", quote: "“时间站在我这边。”", labels: ["防守", "稳定", "抗压", "安全感"], 
+                desc: "你像 Van Dijk 一样，最重要的是先守住底线。你对应的参考风格偏向不喜欢大起大落，更看重安全感和抗风险能力。Van Dijk在利物浦的防线上站了十年——没有一个赛季的数据是“炸裂”的，但每一个赛季的数据都是“令人安心的”。避险属性较强的资产在你的组合里就是这种角色：不是用来进攻的，是用来在别人都倒下的那一刻，还立着的。\n\nVan Dijk不是每场比赛都抢风头的人，但当整条防线需要一个锚，他就是那个锚。有些东西的存在意义，不是让你赚快钱，而是让你在所有人都站不住的时候，还能站着。这才是“十年后再看”的底气。" 
+            },
+            tc: {
+                title: "定海神針", subtitle: "雲迪克型", quote: "「時間企喺我呢邊。」", labels: ["防守", "穩定", "抗壓", "安全感"], 
+                desc: "你似Van Dijk 一樣，最重要係先守住底線。你對應嘅參考風格偏向唔鍾意大起大落，更睇重安全感同抗風險能力。Van Dijk 喺利物浦嘅防線上企咗十年——冇一個賽季嘅數據係「炸裂」嘅，但每一個賽季嘅數據都係「令人安心」嘅。避險屬性較強嘅資產喺你嘅組合入面就係呢種角色：唔係用嚟進攻，而係用嚟喺人哋個個都倒下嘅嗰一刻，仲企喺度嘅。\n\nVan Dijk 唔係每場比賽都搶風頭嘅人，但當整條防線需要一個錨，佢就係嗰個錨。有啲嘢嘅存在意義，唔係令你賺快錢，而係令你喺所有人都企唔住嘅時候，仲能夠企得住。呢個先係「十年後再睇」嘅底氣。" 
+            }
+        },
+        "martinez": { 
+            img: "martinez", 
+            sc: {
+                title: "守门人", subtitle: "马丁内斯型", quote: "“他们负责逆转。我负责不让逆转发生。”", labels: ["安全感", "流动性", "防守底线", "关键守护", "底线", "关键时刻", "最后答案"], 
+                desc: "你像 Martínez 一样，是关键时刻的最后一道防线。你对应的参考风格偏向最重视资金的稳定性、流动性和安全垫，不喜欢让自己处于过度波动之中。Martínez在世界杯决赛扑出那颗点球的时候，整个阿根廷的心跳停了一秒——然后发现他还在那里。本币流动性资产就是你的“还在那里”：不带任何花哨的预期，只有流动性和安全垫。当前面10个人都冲上去了，你是守住底线的那一个。\n\n你偏向是那种在任何市场情绪里都不会被带跑偏的人。你比较在意“方向对不对”——不是一个季度的方向，而是这个国家未来五到十年的方向。赚钱很重要，但“站在哪条船上”比赚钱本身重要一百倍。" 
+            },
+            tc: {
+                title: "守門人", subtitle: "馬天尼斯型", quote: "「佢哋負責逆轉。我負責唔畀逆轉發生。」", labels: ["安全感", "流動性", "防守底線", "關鍵守護", "底線", "關鍵時刻", "最後答案"], 
+                desc: "你似 Martínez 一樣，係關鍵時刻嘅最後一道防線。你對應嘅參考風格偏向最重視資金嘅穩定性、流動性同安全墊，唔鍾意令自己處於過度波動之中。Martínez 喺世界盃決賽撲出嗰球十二碼嘅時候，成個阿根廷嘅心跳停咗一秒——然後發現佢仲喺度。本幣流動性資產就係你嘅「仲喺度」：唔帶任何花巧嘅預期，只有流動性同安全墊。當前邊 10 個人都衝咗上去，你係守住底線嗰一個。\n\n你偏向係嗰種喺任何市場情緒入面都唔會被帶偏嘅人。你比較在意「方向啱唔啱」——唔係一個季度嘅方向，而係呢個國家未來五到十年嘅方向。賺錢好重要，但「企喺邊條船」比賺錢本身重要一百倍。" 
+            }
+        }
+    };
+
+    let currentStep = 0;
+    let userSelections = new Array(quizData.length).fill(null); 
+
+    // 根据语言切换时立即重新渲染界面
     function selectLanguage(langCode) {
         currentLanguage = langCode;
         
+        // 更新静态文字
+        document.getElementById('pageTitle').innerText = uiText[currentLanguage].title;
+        document.title = uiText[currentLanguage].title;
+        document.getElementById('prevBtn').innerText = uiText[currentLanguage].prevBtn;
+        document.getElementById('shareBtn').innerText = uiText[currentLanguage].shareBtn;
+        document.getElementById('restartBtn').innerText = uiText[currentLanguage].restartBtn;
+        document.getElementById('qrTestText').innerText = uiText[currentLanguage].qrTest;
+        document.getElementById('qrSocial1Text').innerText = uiText[currentLanguage].qrSocial1;
+        document.getElementById('qrSocial2Text').innerText = uiText[currentLanguage].qrSocial2;
+        document.getElementById('qrSocial3Text').innerText = uiText[currentLanguage].qrSocial3;
+        document.getElementById('disclaimerText').innerText = uiText[currentLanguage].disclaimer;
+        document.getElementById('posterTipText').innerText = uiText[currentLanguage].posterTip;
+
+        // 切换背景与 Logo
         const homeBg = document.getElementById('homeBgImg');
+        const mainLogo = document.getElementById('mainLogo');
         if (langCode === 'tc') {
             homeBg.src = 'home-bg-tc.png';
+            mainLogo.src = 'logo-tc.png';
         } else {
             homeBg.src = 'home-bg-sc.png';
+            mainLogo.src = 'logo-sc.png';
         }
+
+        // 提前刷新题库语言，防止进入第一页时显示错误
+        renderQuestion();
 
         document.getElementById('langPage').style.display = 'none';
         document.getElementById('homePage').style.display = 'flex';
@@ -467,211 +766,26 @@
         window.scrollTo({top: 0, behavior: 'smooth'}); 
     }
 
-    const questions = [
-        {
-            id: "Q1",
-            title: "假设你化身场上球员，对阵完全陌生的对手，开场你会怎么踢？",
-            options: [
-                { text: "A. 先观察对手战术，绝不盲目冲，摸清底细再动脚", score: ["梅西", "马丁内斯"] },
-                { text: "B. 开局直接全线压上猛冲，靠气势压制对手，主打一个先发制人", score: ["姆巴佩", "C 罗"] },
-                { text: "C. 不按常规出牌，靠灵光一现制造意外惊喜", score: ["亚马尔", "哈兰德"] },
-                { text: "D. 牢牢锁死中场球权，稳扎稳打控节奏，绝不轻易丢球", score: ["贝林厄姆", "罗德里"] }
-            ]
-        },
-        {
-            id: "Q2",
-            title: "球队比分落后 1 球，场上局势吃紧，你的第一选择是？",
-            options: [
-                { text: "A. 稳住阵脚，耐心等待对手露出破绽，不急于强攻", score: ["罗德里", "贝林厄姆"] },
-                { text: "B. 全员火力拉满疯狂进攻，不惜代价快速扳平比分", score: ["C 罗", "哈兰德", "姆巴佩"] },
-                { text: "C. 切换全新战术打法，针对性抓对方防守短板", score: ["迪亚斯", "萨利巴", "梅西", "亚马尔"] },
-                { text: "D. 信任队内核心大腿，按原定战术稳步执行，不轻易乱改", score: ["马丁内斯", "范戴克"] }
-            ]
-        },
-        {
-            id: "Q3",
-            title: "你最欣赏以下哪种球员？",
-            options: [
-                { text: "A. “控球大师”：球队的进攻发动机", score: ["贝林厄姆", "罗德里", "梅西"] },
-                { text: "B. “关键先生”：读秒绝杀、一锤定音", score: ["C 罗", "姆巴佩", "贝林厄姆"] },
-                { text: "C. “未来之星”：新生代超新星，天赋拉满", score: ["亚马尔", "哈兰德"] },
-                { text: "D. “叹息之墙”：顶级门神 / 铁卫，零封专业户", score: ["范戴克", "迪亚斯", "萨利巴", "马丁内斯"] }
-            ]
-        },
-        {
-            id: "Q4",
-            title: "你怎么看待“赢球最重要，踢得丑无所谓”这句话？",
-            options: [
-                { text: "A. 完全同意，赢球才是硬道理", score: ["马丁内斯", "范戴克"] },
-                { text: "B. 偶尔还行", score: ["哈兰德", "迪亚斯"] },
-                { text: "C. 打出让人铭记的精彩名场面最重要", score: ["贝林厄姆", "梅西"] },
-                { text: "D. 完全不能接受，坚持漂亮足球", score: ["亚马尔", "姆巴佩"] }
-            ]
-        },
-        {
-            id: "Q5",
-            title: "你的竞技心态属哪一种？",
-            options: [
-                { text: "A. 天生大心脏，越到决赛、生死战越亢奋，大赛超常发挥", score: ["姆巴佩", "马丁内斯"] },
-                { text: "B. 稳定型选手，大小比赛发挥统一，稳定靠谱", score: ["罗德里", "萨利巴", "范戴克"] },
-                { text: "C. 小赛封神，大赛心态容易崩掉", score: ["亚马尔", "哈兰德"] },
-                { text: "D. 状态两极分化，时而天神下凡，时而隐身", score: ["C 罗", "贝林厄姆"] }
-            ]
-        },
-        {
-            id: "Q6",
-            title: "下面哪种球队战术风格，是你最偏爱？",
-            options: [
-                { text: "A. 防守反击闪电战，等对手失误快速得分", score: ["姆巴佩", "哈兰德"] },
-                { text: "B. 极致的控球，反复传导磨灭对手的意志", score: ["梅西", "罗德里"] },
-                { text: "C. 奔放的桑巴舞者，美丽足球+英雄主义，观赏性拉满", score: ["亚马尔", "贝林厄姆"] },
-                { text: "D. 铁桶阵、摆大巴，主打零漏洞", score: ["范戴克", "迪亚斯", "萨利巴"] },
-                { text: "E. 高位逼抢，压迫对手，机会是靠自己抢出来的", score: ["迪亚斯"] }
-            ]
-        },
-        {
-            id: "Q7",
-            title: "比赛只剩最后五分钟，球队仍处于落后，你会怎么做？",
-            options: [
-                { text: "A. 化身队内气氛组，不停鼓励队友稳住心态，凝聚全队士气", score: ["范戴克", "迪亚斯", "马丁内斯"] },
-                { text: "B. 眼里只有破门得分，不顾一切持球突破、强攻射门", score: ["C 罗", "哈兰德", "姆巴佩"] },
-                { text: "C. 沉下心耐心蹲守，等待对手失误漏出破绽，一击制胜", score: ["亚马尔", "梅西"] },
-                { text: "D. 上前高压逼抢，压迫持球人，抢夺球权", score: ["贝林厄姆", "萨利巴", "罗德里", "哈兰德"] }
-            ]
-        },
-        {
-            id: "Q8",
-            title: "你最喜欢的球星赛场风格是？",
-            options: [
-                { text: "A. “圆月弯刀” ，任意球大师，脚法细腻，擅长长线布局", score: ["C 罗", "罗德里"] },
-                { text: "B. “彩虹过人”，极致脚下盘带技术，靠个人能力撕碎防线", score: ["梅西", "亚马尔"] },
-                { text: "C. “蝎子摆尾”的自信创意流球星，不走寻常路", score: ["C 罗", "姆巴佩"] },
-                { text: "D. “幽灵跑位“意识流，球商拉满，总能悄无声息出现在最关键得分点位", score: ["贝林厄姆", "范戴克", "梅西", "哈兰德"] }
-            ]
-        },
-        {
-            id: "Q9",
-            title: "你的球迷人格是？",
-            options: [
-                { text: "A. 互联网辩手，不回避对线吵架，常年蹲评论区争论 “梅西和 C 罗谁是 GOAT”", score: ["梅西", "C 罗"] },
-                { text: "B. 元老级老球迷，远古名场面如数家珍，当年的 “上帝之手”你至今还记得", score: ["范戴克", "萨利巴", "迪亚斯"] },
-                { text: "C. 冠军粉，评判标准唯荣誉和奖杯，总是说：“你是什么冠军？”", score: ["梅西", "姆巴佩", "马丁内斯"] },
-                { text: "D. 世界杯球迷，四年一次限定回归，刷短视频两天速成懂球帝", score: ["哈兰德", "亚马尔"] },
-                { text: "E. 凑热闹吃瓜型, 谁火我粉谁，看球的时候会问出：“什么是越位？”", score: ["C 罗", "贝林厄姆", "哈兰德"] }
-            ]
-        }
-    ];
-
-    const resultData = {
-        "梅西": { 
-            img: "messi", 
-            title: "长期主义者", 
-            subtitle: "梅西型", 
-            quote: "“真正的自由，是不被定义。”", 
-            labels: ["稳定", "细腻", "长期复利", "核心资产", "全域最优", "不设边界", "上帝视角"], 
-            desc: "你像 Messi 一样，不一定每一步都声势浩大，但总能在长期里证明价值。你更相信时间、积累和稳定输出，不喜欢频繁追涨杀跌。你对应的参考风格偏向是核心压舱石，重视全盘布局与长期盈利。同时，你不喜欢被框住。你的思维方式不是“选边站”，而是“全域最优解”——就像Messi在球场上的位置：不是前锋、不是中场、不是边路，却随时可以是任何角色。你对应的参考风格应当是自己的镜像：不执着于单一赛道，而是兼容消费电子、AI芯片、操作系统与网络通信等全球科技核心力量。投资最稀缺的能力不是选股，是跳出边界、看到全域——而这件事，其实你比想象中更擅长。" 
-        },
-        "C 罗": { 
-            img: "ronaldo", 
-            title: "征服者", 
-            subtitle: "C 罗型", 
-            quote: "“时间不会辜负自律的人。”", 
-            labels: ["自律", "目标感", "结果导向", "现金流意识", "进化", "复利信仰"], 
-            desc: "你像Cristiano Ronaldo一样，目标感非常强，喜欢清晰的结果和可见的回报。你不满足于“差不多”，更希望资产能够持续发挥作用。你对应的参考风格偏向更接近收益目标明确、重视分红和现金流的特质。C罗最恐怖的不是某一场进了几个球，而是二十年如一日地保持顶级输出——不追求短期盈利，但求可持续性。" 
-        },
-        "姆巴佩": { 
-            img: "mbappe", 
-            title: "疾行者", 
-            subtitle: "姆巴佩型", 
-            quote: "“这条边路，没人追得上。”", 
-            labels: ["速度", "爆发", "机会", "进攻性", "极速", "破局", "不可阻挡"], 
-            desc: "你像 Mbappé 一样，行动快、判断快，愿意在机会出现时果断出击。你对应的参考风格偏向更接近高弹性、偏进攻、相对能够接受一定波动，也希望抓住市场反弹机会。别人还在犹豫要不要入场的时候，你可能已经及时看到了潜在机遇——就像Mbappé看到对面左后卫重心偏了一下，下一秒他已经冲过去了。你的本能反应比大多数人快一拍。你相信真正的优势不是研究出来的，是在别人没反应过来之前先站上去。" 
-        },
-        "亚马尔": { 
-            img: "yamal", 
-            title: "新势力", 
-            subtitle: "亚马尔型", 
-            quote: "“你等的那个未来，我正在踢。”", 
-            labels: ["年轻", "未来感", "创新", "成长想象力", "不设限"], 
-            desc: "你像Yamal 一样，对新事物敏锐，也愿意提前关注未来趋势。你对应的参考风格偏向不只看眼前稳定收益，更倾向关注全球AI、科技创新和新产业周期。Yamal在17岁就已经首发世界杯半决赛——有人在等未来，有人已经站在了未来的球场上。你关注AI不是因为它火了，而是因为你从一开始就知道：这是下一代基础设施。" 
-        },
-        "哈兰德": { 
-            img: "haaland", 
-            title: "终结者", 
-            subtitle: "哈兰德型", 
-            quote: "“不花哨，只进球。”", 
-            labels: ["直接", "高效", "爆发力", "强执行"], 
-            desc: "你像 Haaland 一样，不喜欢绕弯，重视效率和关键突破。你对应的参考风格偏向愿意关注具备高成长空间、但也可能伴随较高波动的主题机会。你的优势不在于频繁操作，而在于判断什么时候该出手，就像Haaland一样，不需要一套复杂的过人动作——只需要在正确的时间站在正确的位置。" 
-        },
-        "贝林厄姆": { 
-            img: "bellingham", 
-            title: "双核引擎", 
-            subtitle: "贝林厄姆型", 
-            quote: "“两个半场，我都是主角。”", 
-            labels: ["全能", "成熟", "攻守兼备", "核心配置", "无缝切换"], 
-            desc: "你像 Bellingham 一样，不只会进攻，也能掌控整体节奏。你对应的参考风格偏向不喜欢单押一个方向，更看重核心资产和组合基础，Bellingham可以在禁区内争顶，也可以回撤到本方禁区铲断——在进攻端跟得上，也能在防守端站得住。像 Bellingham一样，不炫技，任何市场环境下维持基本盘。" 
-        },
-        "罗德里": { 
-            img: "rodri", 
-            title: "靠山", 
-            subtitle: "罗德里型", 
-            quote: "“我在的时候，一切风平浪静。”", 
-            labels: ["理性", "纪律", "控场", "宏观判断", "系统基石"], 
-            desc: "你像 Rodri 一样，冷静、稳定，习惯先看清局势再行动。你对应的参考风格偏向不太容易被短期情绪带走，更重视纪律、风险管理和策略匹配。有些市场在你的组合里就是这样的存在：与主流市场相关性低，拥有独立的货币周期和估值体系，在震荡时走出不一样的节奏。可能偏向关注全球核心企业，锚定不同产业基本面——不追热点，不抢反弹。真正的分散是配置不同驱动力的资产，而非买很多只股票。就像一座低调但不可或缺的“减震器”。" 
-        },
-        "萨利巴": { 
-            img: "saliba", 
-            title: "隐盾", 
-            subtitle: "萨利巴型", 
-            quote: "“最好的防守，你注意不到。”", 
-            labels: ["稳健", "成长", "防守质量"], 
-            desc: "你像 Saliba 一样，既有年轻成长性，也有稳定防守感。你对应的参考风格偏向不一定追求最刺激的机会，但会关注基本面、质量和结构性优势。Saliba在阿森纳防线上最惊人的不是某一次飞铲，而是对手逐渐学会了“不从这一侧进攻”。组合里总需要有一侧——不是用来暴涨的，是用来在别人追涨杀跌的时候，你这头相对风平浪静的。你可能不是那种喜欢大声讨论投资策略的人。你的偏好可能不是高弹性的刺激，而是“让对手根本找不到机会”的结构性稳定。就像Saliba在阿森纳的防线上——没有华丽的飞铲，只有对手一次次无功而返。你在投资里选的那一侧，就是别人跌倒了才发现你从未站错的那一侧。无声，但有用。" 
-        },
-        "迪亚斯": { 
-            img: "dias", 
-            title: "铜墙铁壁", 
-            subtitle: "迪亚斯型", 
-            quote: "“风暴越大，越得有人站着。”", 
-            labels: ["强硬", "果断", "抗压", "敢承受波动"], 
-            desc: "你像 Luis Díaz一样，面对高强度环境也有自己的判断和承受力。你对应的参考风格偏向对新型资产和高波动机会幷不完全排斥，但更适合把它作为组合中的卫星配置来看待。Díaz不是传统意义上“安全”的中后卫——他敢于在高压对抗中做出果断出脚。例如加密货币在你的组合里也不是主仓位，而是那个“所有人都觉得有风险、但你知道它在结构上具有稀缺性”的卫星配置。你对风险的嗅觉可能比较敏锐——市场过热的时候你可能已经在减仓了，别人还在追的时候你可能已经锁住了底线。不是因为你悲观，是因为你见过什么叫“猝不及防”。Díaz不是球队里进球的人，但他是当对手打反击时第一个站出来的那道铁壁。打个比方，你可能不是把加密货币当成避险资产，而是把它当成组合里最锋利的矛——单独配置、控制仓位、敢输也敢赢，用最小的仓位博取最大的不对称回报。" 
-        },
-        "范戴克": { 
-            img: "vandijk", 
-            title: "定海神针", 
-            subtitle: "范戴克型", 
-            quote: "“时间站在我这边。”", 
-            labels: ["防守", "稳定", "抗压", "安全感"], 
-            desc: "你像 Van Dijk 一样，最重要的是先守住底线。你对应的参考风格偏向不喜欢大起大落，更看重安全感和抗风险能力。Van Dijk在利物浦的防线上站了十年——没有一个赛季的数据是“炸裂”的，但每一个赛季的数据都是“令人安心的”。避险属性较强的资产在你的组合里就是这种角色：不是用来进攻的，是用来在别人都倒下的那一刻，还立着的。Van Dijk不是每场比赛都抢风头的人，但当整条防线需要一个锚，他就是那个锚。有些东西的存在意义，不是让你赚快钱，而是让你在所有人都站不住的时候，还能站着。这才是“十年后再看”的底气。" 
-        },
-        "马丁内斯": { 
-            img: "martinez", 
-            title: "守门人", 
-            subtitle: "马丁内斯型", 
-            quote: "“他们负责逆转。我负责不让逆转发生。”", 
-            labels: ["安全感", "流动性", "防守底线", "关键守护", "底线", "关键时刻", "最后答案"], 
-            desc: "你像 Martínez 一样，是关键时刻的最后一道防线。你对应的参考风格偏向最重视资金的稳定性、流动性和安全垫，不喜欢让自己处于过度波动之中。Martínez在世界杯决赛扑出那颗点球的时候，整个阿根廷的心跳停了一秒——然后发现他还在那里。本币流动性资产就是你的“还在那里”：不带任何花哨的预期，只有流动性和安全垫。当前面10个人都冲上去了，你是守住底线的那一个。你偏向是那种在任何市场情绪里都不会被带跑偏的人。你比较在意“方向对不对”——不是一个季度的方向，而是这个国家未来五到十年的方向。赚钱很重要，但“站在哪条船上”比赚钱本身重要一百倍。" 
-        }
-    };
-
-    let currentStep = 0;
-    let userSelections = new Array(questions.length).fill(null); 
-
+    // 渲染题目
     function renderQuestion() {
-        const q = questions[currentStep];
+        const q = quizData[currentStep];
         
         document.getElementById('qNumberDisplay').innerText = `Q${currentStep + 1}`;
-        document.getElementById('progressText').innerText = `${currentStep + 1}/${questions.length}`;
-        const progressPercentage = ((currentStep + 1) / questions.length) * 100;
+        document.getElementById('progressText').innerText = `${currentStep + 1}/${quizData.length}`;
+        const progressPercentage = ((currentStep + 1) / quizData.length) * 100;
         document.getElementById('progressBar').style.width = `${progressPercentage}%`;
-        document.getElementById('questionTitle').innerText = q.title;
+        
+        // 动态加载对应语言的题干
+        document.getElementById('questionTitle').innerText = q.title[currentLanguage];
         
         const optionsDiv = document.getElementById('optionsGroup');
         optionsDiv.innerHTML = '';
         
         q.options.forEach((opt, index) => {
-            const match = opt.text.match(/^([A-Ea-e])\.\s*(.+)$/);
+            const currentOptText = opt.text[currentLanguage];
+            const match = currentOptText.match(/^([A-Ea-e])\.\s*(.+)$/);
             const letter = match ? match[1] : String.fromCharCode(65 + index);
-            const textContent = match ? match[2] : opt.text;
+            const textContent = match ? match[2] : currentOptText;
 
             const btn = document.createElement('div');
             btn.className = 'option-btn';
@@ -686,7 +800,8 @@
         const nextBtn = document.getElementById('nextBtn');
         
         prevBtn.style.visibility = currentStep === 0 ? 'hidden' : 'visible';
-        nextBtn.innerText = currentStep === questions.length - 1 ? "查看结果" : "下一题";
+        
+        nextBtn.innerText = currentStep === quizData.length - 1 ? uiText[currentLanguage].resultBtn : uiText[currentLanguage].nextBtn;
 
         if (userSelections[currentStep] === null) {
             nextBtn.disabled = true; nextBtn.classList.remove('active');
@@ -699,17 +814,17 @@
     
     function nextQuestion() {
         if (userSelections[currentStep] === null) return;
-        if (currentStep < questions.length - 1) { currentStep++; renderQuestion(); } 
+        if (currentStep < quizData.length - 1) { currentStep++; renderQuestion(); } 
         else { calculateAndShowResult(); }
     }
 
     function calculateAndShowResult() {
         let scores = {}; 
-        Object.keys(resultData).forEach(name => scores[name] = 0);
+        Object.keys(resultDataConfig).forEach(name => scores[name] = 0);
 
         userSelections.forEach((selectedIndex, step) => {
             if (selectedIndex !== null) {
-                const q = questions[step];
+                const q = quizData[step];
                 const selectedScores = q.options[selectedIndex].score;
                 selectedScores.forEach(name => { 
                     if(scores.hasOwnProperty(name)) scores[name]++; 
@@ -724,7 +839,7 @@
         if (tiedPlayers.length > 1) {
             const q5Selection = userSelections[4];
             if (q5Selection !== null) {
-                const q5ScoreList = questions[4].options[q5Selection].score;
+                const q5ScoreList = quizData[4].options[q5Selection].score;
                 const q5Winners = tiedPlayers.filter(p => q5ScoreList.includes(p));
                 if (q5Winners.length > 0) tiedPlayers = q5Winners;
             }
@@ -732,7 +847,7 @@
             if (tiedPlayers.length > 1) {
                 const q6Selection = userSelections[5];
                 if (q6Selection !== null) {
-                    const q6ScoreList = questions[5].options[q6Selection].score;
+                    const q6ScoreList = quizData[5].options[q6Selection].score;
                     const q6Winners = tiedPlayers.filter(p => q6ScoreList.includes(p));
                     if (q6Winners.length > 0) tiedPlayers = q6Winners;
                 }
@@ -741,7 +856,7 @@
             if (tiedPlayers.length > 1) {
                 const q3Selection = userSelections[2];
                 if (q3Selection !== null) {
-                    const q3ScoreList = questions[2].options[q3Selection].score;
+                    const q3ScoreList = quizData[2].options[q3Selection].score;
                     const q3Winners = tiedPlayers.filter(p => q3ScoreList.includes(p));
                     if (q3Winners.length > 0) tiedPlayers = q3Winners;
                 }
@@ -758,16 +873,18 @@
         document.getElementById('quizPage').classList.add('hidden');
         document.getElementById('resultPage').style.display = 'block';
 
-        const res = resultData[winner];
-        document.getElementById('resMainTitle').innerText = res.title;
-        document.getElementById('resSubTitle').innerText = res.subtitle;
-        document.getElementById('resQuote').innerText = res.quote;
-        document.getElementById('resDesc').innerText = res.desc;
-        document.getElementById('resImg').src = "images/" + res.img + ".png";
+        const resObj = resultDataConfig[winner];
+        const localizedRes = resObj[currentLanguage];
+
+        document.getElementById('resMainTitle').innerText = localizedRes.title;
+        document.getElementById('resSubTitle').innerText = localizedRes.subtitle;
+        document.getElementById('resQuote').innerText = localizedRes.quote;
+        document.getElementById('resDesc').innerText = localizedRes.desc;
+        document.getElementById('resImg').src = "images/" + resObj.img + ".png";
 
         const labelDiv = document.getElementById('resLabels');
         labelDiv.innerHTML = '';
-        res.labels.forEach(l => {
+        localizedRes.labels.forEach(l => {
             const span = document.createElement('span'); 
             span.className = 'label-tag'; 
             span.innerText = l;
@@ -780,7 +897,7 @@
     function generateSharePoster() {
         const shareBtn = document.getElementById('shareBtn');
         const originalText = shareBtn.innerText;
-        shareBtn.innerText = "正在生成专属海报...";
+        shareBtn.innerText = uiText[currentLanguage].generating;
         shareBtn.disabled = true;
 
         const actionBtns = document.getElementById('actionButtonsGroup');
@@ -805,7 +922,7 @@
 
             }).catch(err => {
                 console.error("生成海报失败:", err);
-                alert("抱歉，生成专属海报失败，请稍后重试。");
+                alert(uiText[currentLanguage].generateFail);
                 actionBtns.classList.remove('hidden');
                 shareBtn.innerText = originalText;
                 shareBtn.disabled = false;
@@ -817,6 +934,7 @@
         document.getElementById('posterModal').classList.add('hidden');
     }
 
+    // 默认展示的可能是 SC，但因为加入了预渲染，会更加顺滑
     renderQuestion();
 </script>
 
