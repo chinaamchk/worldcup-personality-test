@@ -55,6 +55,8 @@
             box-sizing: border-box;
             position: relative;
             overflow-x: hidden;
+            /* 加入平滑的背景过渡动画 */
+            transition: background-image 0.3s ease, background-color 0.3s ease;
         }
 
         /* ----- 语言选择页样式 (第0层) ----- */
@@ -724,7 +726,7 @@
     let currentStep = 0;
     let userSelections = new Array(quizData.length).fill(null); 
 
-    // 根据语言切换时立即重新渲染界面
+    // 根据语言切换时立即重新渲染界面，并切换全局背景逻辑
     function selectLanguage(langCode) {
         currentLanguage = langCode;
         
@@ -741,7 +743,7 @@
         document.getElementById('disclaimerText').innerText = uiText[currentLanguage].disclaimer;
         document.getElementById('posterTipText').innerText = uiText[currentLanguage].posterTip;
 
-        // 切换背景与 Logo
+        // 切换海报与 Logo
         const homeBg = document.getElementById('homeBgImg');
         const mainLogo = document.getElementById('mainLogo');
         if (langCode === 'tc') {
@@ -752,6 +754,11 @@
             mainLogo.src = 'logo-sc.png';
         }
 
+        // 🚨 核心修复：进入首页海报时，移除全局背景的几何纹路，用海报底部的深红色填充多余的长屏幕空间
+        const appContainer = document.getElementById('captureTarget');
+        appContainer.style.backgroundImage = 'none';
+        appContainer.style.backgroundColor = '#901217'; // 这是一个与海报底部完美衔接的深红色
+
         // 提前刷新题库语言，防止进入第一页时显示错误
         renderQuestion();
 
@@ -761,6 +768,11 @@
     }
 
     function startQuiz() {
+        // 🚨 核心修复：进入答题和结果页时，恢复全局红底波浪纹背景
+        const appContainer = document.getElementById('captureTarget');
+        appContainer.style.backgroundImage = "url('mobile BG.png')";
+        appContainer.style.backgroundColor = 'transparent';
+
         document.getElementById('homePage').style.display = 'none';
         document.getElementById('mainContent').style.display = 'flex'; 
         window.scrollTo({top: 0, behavior: 'smooth'}); 
@@ -934,7 +946,6 @@
         document.getElementById('posterModal').classList.add('hidden');
     }
 
-    // 默认展示的可能是 SC，但因为加入了预渲染，会更加顺滑
     renderQuestion();
 </script>
 
