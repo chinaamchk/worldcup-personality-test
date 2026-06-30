@@ -974,7 +974,37 @@
         }
     });
 
-    renderQuestion();
+renderQuestion();
+
+    // 🟢 强力拦截：不破坏任何原有逻辑，只在算出结果的一瞬间偷偷上报给 Google 表单
+    (function() {
+        const originalCalculate = calculateAndShowResult;
+        if (typeof originalCalculate === 'function') {
+            calculateAndShowResult = function() {
+                // 1. 先安全执行你原本微调过的所有计分和页面渲染逻辑
+                originalCalculate.apply(this, arguments);
+                
+                // 2. 原逻辑顺利跑完后，在后台静默发起上报
+                try {
+                    const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSccV_FP9bBLiOEc1JC3tjQSC4JurrB4mVPU4cSlg19JUaVFHQ/formResponse';
+                    const formData = new URLSearchParams();
+                    
+                    // 动态抓取当前运算出来的优胜球星 (winner)
+                    formData.append('entry.669660879', document.getElementById('resSubTitle').innerText.replace('型', '')); 
+                    formData.append('entry.152680789', currentLanguage); 
+
+                    fetch(formURL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData.toString()
+                    }).then(() => console.log('数据已隐形发送给后台'));
+                } catch (e) {
+                    console.log('上报异常拦截，不卡顿页面', e);
+                }
+            };
+        }
+    })();
 </script>
 
 </body>
